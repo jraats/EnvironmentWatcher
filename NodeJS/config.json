@@ -1,0 +1,10 @@
+{
+	"secretkey" 	: "EnvironmentWatcher-123456ABCdef",
+	"username"		: "test",
+	"password"  	: "test",
+	"dbUsername"	: "root",
+	"dbPassword"	: "ProjectLeiden",
+	"dbScheme"		: "EnvironmentWatcher",
+	"dbServer"		: "localhost",
+	"webPort"		: "8080"
+}
