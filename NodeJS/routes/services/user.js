@@ -5,29 +5,30 @@ var user = {
 		var query = "SELECT * FROM user;";
 		objectreciever.getObject(req, res, query, "user");
 	},
-	getUserById: function(req, res){
-		if (!isNaN(req.params.id)) {
-			var query = "SELECT * FROM user WHERE ID = "+req.params.id+";";
+	getUserByUsername: function(req, res){
+		if (!isNaN(req.params.username)) {
+			var query = "SELECT * FROM user WHERE username = "+req.params.username+";";
 			objectreciever.getObject(req, res, query, "user");
 		}else{
-		res.json({error: "id moet numeriek zijn."});
+		res.json({error: "naam moet numeriek zijn."});
 		}
 	},
 	createUser: function(req, res){
 		var object = { 
-			name: req.body.name || '',
-			passw: req.body.passw || ''
+			username: req.body.username || '',
+			password: req.body.password || ''
 		};
 		objectreciever.createObject(req, res, object, "user");
 	},
-	updateUserById: function(req, res){
+	updateUserByUsername: function(req, res){
 		var object = {
-			iD: req.params.id,
+			columnName: "username",
+			columnItem: req.params.username
 		};
-		
+		console.log(req.body.password);
 		//set only values we want to update..
-		if(req.body.name) 						object['name'] = req.body.name;
-		if(req.body.passw) 						object['passw'] = req.body.passw;
+		if(req.body.productId) 			object['productId'] = req.body.productId;
+		if(req.body.password) 			object['password'] = req.body.password;
 
 		objectreciever.updateObject(req, res, object, "user");
 	}

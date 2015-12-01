@@ -1,3 +1,5 @@
+var util = require('util');
+
 objectreciever = { 
 	getObject: function(req, res, query, objectResult){
 		if(objectResult === undefined){
@@ -29,9 +31,7 @@ objectreciever = {
 				values+= ",";		  		
 		  	}
 		});
-
 		var query = "INSERT INTO "+tableName+" ("+keys+") VALUES ("+values+");";
-
 		var results = {};
 		var db = req.app.get('dbConnection');
 		db.query(query, function (err, rows, fields) {
@@ -43,7 +43,7 @@ objectreciever = {
 		});
 	},
 	updateObject: function(req, res, object, tableName){
-		if(object.ID && !isNaN(object.ID)){
+		if(object.columnItem){
 			var count = 0;
 			var lengthObject = Object.keys(object).length;
 			
@@ -51,15 +51,14 @@ objectreciever = {
 
 			Object.keys(object).forEach(function(key) {
 				count++;
-				if(key !== "ID"){
+				if(key !== "columnName" && key !== "columnItem"){
 				  	sets += key+"='"+object[key]+"'";
 				  	if(lengthObject > count){
 						sets+= ",";
 				  	}
 			  	}
 			});
-			var query = "UPDATE "+tableName+" SET "+sets+" WHERE ID="+object.ID+";";
-
+			var query = "UPDATE "+tableName+" SET "+sets+" WHERE "+object.columnName+"="+object.columnItem+";";
 			var results = {};
 			var db = req.app.get('dbConnection');
 			db.query(query, function (err, rows, fields) {
@@ -70,9 +69,24 @@ objectreciever = {
 				}
 			});
 		}else{
-			res.json({status: "ERROR, ID is not set"}); 	
+			res.json({status: "ERROR, id is not set"}); 	
 		}
 		
+	},
+	DeleteObject: function(req, res, object, tableName){
+		
+		var query = "DELETE "+object.item+" FROM "+tableName+" WHERE "+object.columnName+"="+object.columnItem+";";
+		
+		var results = {};
+		var db = req.app.get('dbConnection');
+		db.query(query, function (err, rows, fields) {
+			if(err){ 
+				res.json({status: "ERROR"}); 
+			}else{
+				res.json({status: "OK"});	
+			}
+		});
 	}
+	
 }
 module.exports = objectreciever;
