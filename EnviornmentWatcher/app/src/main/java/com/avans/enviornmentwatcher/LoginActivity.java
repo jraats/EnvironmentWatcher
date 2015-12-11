@@ -35,8 +35,8 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void Login(String result) {
                         if (!result.isEmpty()) {
-                            //TODO: Create user (singleton?)
-                            // Navigatie
+
+                            DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
 
                             //Example of using data
                             //Intent i = new Intent(getApplicationContext(), ProductSelectorActivity.class);
@@ -54,10 +54,11 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    //Creating a alert when the user cannot login
+    //Creating a alert when the user cannot login (assuming this is actually the problem
+    //TODO: create different errors
     private void getAlert()
     {
-        // Username or password false, display and an error
+
         AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
 
         dlgAlert.setMessage("wrong password or username");
