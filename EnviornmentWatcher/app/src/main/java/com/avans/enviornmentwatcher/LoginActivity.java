@@ -1,5 +1,7 @@
 package com.avans.enviornmentwatcher;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -16,36 +18,52 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        JsonCommunication.getInstance(getApplicationContext());
 
+        //Create communication singleton
+        JSONCommunicator.getInstance(getApplicationContext());
+
+        //Creating text fields
         editText_Username = (EditText) findViewById(R.id.editText_Username);
         editText_Password = (EditText) findViewById(R.id.editText_Password);
 
+        //Creating button with logic
         button_Login = (Button) findViewById(R.id.button_Login);
         button_Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JsonCommunication.getInstance().Login(editText_Username.getText().toString(), editText_Password.getText().toString(), new JsonInterface<String>() {
+                JSONCommunicator.getInstance().Login(editText_Username.getText().toString(), editText_Password.getText().toString(), new CommunicationInterface<String>() {
                     @Override
                     public void Login(String result) {
                         if (!result.isEmpty()) {
-                            //TODO: Go to next page
-                             /* Navigatie
-                            Intent i = new Intent(getApplicationContext(), NextClass.class);
+                            //TODO: Create user (singleton?)
+                            // Navigatie
 
-                            int value = 1;
-                            i.putExtra("key", value);
+                            //Example of using data
+                            //Intent i = new Intent(getApplicationContext(), ProductSelectorActivity.class);
+                            //i.putExtra("key", value);
 
-                            startActivity(i);*/
-                        }
-                        else
-                        {
-                            //TODO Display Error
+                            startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
+                        } else {
+                            //Send an alert
+                            getAlert();
                         }
                     }
                 });
             }
         });
 
+    }
+
+    //Creating a alert when the user cannot login
+    private void getAlert()
+    {
+        // Username or password false, display and an error
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+
+        dlgAlert.setMessage("wrong password or username");
+        dlgAlert.setTitle("Error Message...");
+        dlgAlert.setPositiveButton("OK", null);
+        dlgAlert.setCancelable(true);
+        dlgAlert.create().show();
     }
 }
