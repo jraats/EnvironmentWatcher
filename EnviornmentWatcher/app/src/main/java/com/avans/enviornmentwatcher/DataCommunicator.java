@@ -22,20 +22,21 @@ public class DataCommunicator {
         return dataCommunicator;
     }
 
-    public void createUser(String username, String apiKey)
-    {
+    public void createUser(String username, String apiKey)    {
         user = new User(username, apiKey);
     }
 
-    public void createProduct()
-    {
+    public void createProduct()    {
         product = new Product();
     }
 
 
-    public User getUser()
-    {
+    public User getUser(){
         return user;
+    }
+
+    public Product getProduct(){
+        return product;
     }
 
 }

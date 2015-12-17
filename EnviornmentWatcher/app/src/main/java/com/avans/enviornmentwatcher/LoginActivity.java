@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.Console;
+
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editText_Username, editText_Password;
@@ -31,37 +33,53 @@ public class LoginActivity extends AppCompatActivity {
         button_Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JSONCommunicator.getInstance().Login(editText_Username.getText().toString(), editText_Password.getText().toString(), new CommunicationInterface<String>() {
-                    @Override
-                    public void Login(String result) {
-                        if (!result.isEmpty()) {
+                JSONCommunicator.getInstance().login(editText_Username.getText().toString(), editText_Password.getText().toString(),
+                    new CommunicationInterface<String>() {
+                        @Override
+                        public void getResponse(String result) {
+                            if (!result.isEmpty()) {
+                                try {
+                                    DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
+                                    JSONCommunicator.getInstance().getProductIDUser(DataCommunicator.getInstance().getUser(),
+                                        new CommunicationInterface<String>() {
 
-                            DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
+                                            @Override
+                                            public void getResponse(String object) {
+                                                if (object.equals("0"))
+                                                {
+                                                    System.out.println("Wheeee!");
+                                                    startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
+                                                }
+                                                else
+                                                    getAlert("Something went wrong, dunno what");
+                                            }
+                                        });
+                                }catch (Exception e){
 
-                            //Example of using data
-                            //Intent i = new Intent(getApplicationContext(), ProductSelectorActivity.class);
-                            //i.putExtra("key", value);
+                                }
 
-                            startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
-                        } else {
-                            //Send an alert
-                            getAlert();
+                                    //Example of using data
+                                //Intent i = new Intent(getApplicationContext(), ProductSelectorActivity.class);
+                                //i.putExtra("key", value);
+
+                            } else {
+                                //Send an alert
+                                getAlert("Wrong Username or Password");
+                            }
                         }
-                    }
-                });
-            }
+                    });
+                }
         });
-
     }
 
     //Creating a alert when the user cannot login (assuming this is actually the problem
     //TODO: create different errors
-    private void getAlert()
+    private void getAlert(String argument)
     {
 
         AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
 
-        dlgAlert.setMessage("wrong password or username");
+        dlgAlert.setMessage(argument);
         dlgAlert.setTitle("Error Message...");
         dlgAlert.setPositiveButton("OK", null);
         dlgAlert.setCancelable(true);

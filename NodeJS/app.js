@@ -4,7 +4,7 @@ var path		= require('path');
 var bodyParser 	= require('body-parser');
 var fs 			= require('fs');
 var moment		= require('moment');
-var mysql		= require('mysql');
+var objectreciever = require ('./routes/services/objectreciever.js');
 var app 		= express();
 
 
@@ -14,14 +14,7 @@ app.set('secretkey', settings.secretkey);
 app.set('username', settings.username);
 app.set('password', settings.password);
 app.set('webPort', settings.webPort);
-var connection = mysql.createConnection(
-{
-	host : settings.dbServer,
-	user : settings.dbUsername,
-	password : settings.dbPassword,
-	database : settings.dbScheme
-});
-app.set('dbConnection', connection);
+objectreciever.createMysqlConnection(app);
 
 
 // everything to JSON

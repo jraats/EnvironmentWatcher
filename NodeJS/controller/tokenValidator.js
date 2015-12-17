@@ -10,8 +10,9 @@ module.exports = function (req, res, next) {
 
             // Check if token is from known user
             // for now ..
-            var userName = req.app.get('username')
-            
+            var userName = 'test'
+			
+			
             if( decoded.iss == userName) {
                 req.app.set("userid", decoded.iss);
                 console.log("Userid: " + req.app.get('userid'));

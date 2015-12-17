@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-
 var user = 			require ('./services/user.js');
 var product = 		require ('./services/product.js');
 var preferences = 	require ('./services/preferences.js');
@@ -12,7 +11,7 @@ router.get('/api/ping', function(req, res){
 
 //Get data from database
 router.get('/api/user', user.getUsers);
-router.get('/api/user/:userUsername', user.getUserByUsername);
+router.get('/api/user/:username', user.getUserByUsername);
 
 router.get('/api/product', product.getproducts);
 router.get('/api/product/:id', product.getProductById);
@@ -34,6 +33,9 @@ router.post('/api/preferences', preferences.createPreferences);
 router.put('/api/preferences/:userUsername', preferences.updatePreferenceByUsername);
 
 router.post('/api/sensorData', sensorData.createSensorData);
-//
+
+//Deleting data from database
+router.delete('/api/user/:username', user.deleteUserByUsername);
+
 module.exports = router;
 

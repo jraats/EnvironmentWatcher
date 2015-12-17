@@ -1,5 +1,4 @@
 var objectreciever = require ('./objectreciever.js');
-
 var sensorData = {
 	getSensorData: function(req, res) {
 		var query = "SELECT * FROM sensorData;";
@@ -10,7 +9,7 @@ var sensorData = {
 			var query = "SELECT * FROM sensorData WHERE productId = "+req.params.productId+";";
 			objectreciever.getObject(req, res, query, "sensorData");
 		}else{
-		res.json({error: "id moet numeriek zijn."});
+		res.json({error: "ID must be a number"});
 		}
 	},
 	createSensorData: function(req, res){
