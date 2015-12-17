@@ -10,6 +10,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,6 +93,7 @@ public class JSONCommunicator {
     }
 
 
+    //check if the user already has a product reserved
     public void getProductIDUser(final User user, final CommunicationInterface<String> listener)
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"user/"+user.getUsername(), new Response.Listener<JSONObject>() {
@@ -132,12 +134,36 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
+    //Retrieving all sensors from database
     public void getAllProducts(final User user, final CommunicationInterface<ArrayList<Product>> listener)
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"product", new Response.Listener<JSONObject>() {
+
             @Override
             public void onResponse(JSONObject response){
-                System.out.println(response.toString());
+                JSONArray jsonArray = null;
+                ArrayList<Product> products = new ArrayList<Product>();
+                try {
+                    jsonArray = response.getJSONArray("products");
+                }catch (Exception e) {
+                    System.out.println("Error!" + e.toString());
+                }
+
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    try {
+                        JSONObject object = response.getJSONArray("products").getJSONObject(i);
+                        Product product = new Product();
+                        product.setId(object.getInt("id"));
+                        product.setRoom(object.getString("roomName"));
+                        product.setLocation(object.getString("location"));
+                        products.add(product);
+
+                    } catch (JSONException error) {
+                        System.out.println("ERROR! " + error.toString());
+                    }
+                }
+                listener.getResponse(products);
             }
         }, new Response.ErrorListener() {
 
@@ -155,7 +181,7 @@ public class JSONCommunicator {
                 return headers;
             }
         };
-        System.out.println(url+"user/"+user.getUsername());
+        System.out.println(url+"product");
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }

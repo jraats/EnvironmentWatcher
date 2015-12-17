@@ -47,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
                                             public void getResponse(String object) {
                                                 if (object.equals("0"))
                                                 {
-                                                    System.out.println("Wheeee!");
                                                     startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
                                                 }
                                                 else

@@ -30,6 +30,8 @@
         </activity>
         <activity android:name=".ProductSelectorActivity" >
         </activity>
+        <activity android:name=".ProductOverview" >
+        </activity>
     </application>
 
 </manifest>
