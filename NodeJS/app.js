@@ -41,7 +41,7 @@ app.all('/api/*', function(req, res, next)
 app.post('/api/login', require('./routes/auth.js').login);
 
 // All other /api/* API request routing via JWT validation
-app.all('/api/*', tokenValidator);
+app.all('/api/*', require('./controller/tokenValidator.js').checkToken);
 
 // Process all routes using express router
 app.use('/', require('./routes/index.js'));

@@ -2,7 +2,7 @@ var objectreciever = require ('./objectreciever.js');
 var product = {
 	getproducts: function(req, res) {
 		var query = "SELECT * FROM product;";
-		objectreciever.getObject(req, res, query, "products");
+		objectreciever.getObject(req, res, query, "product");
 	},
 	getProductById: function(req, res){
 		if (!isNaN(req.params.id)) {
@@ -13,6 +13,7 @@ var product = {
 		}
 	},
 	createProduct: function(req, res){
+		console.log("Hallo");
 		var object = { 
 			roomName: req.body.roomName || '',
 			location: req.body.location || ''

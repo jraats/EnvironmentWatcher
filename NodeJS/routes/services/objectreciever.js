@@ -49,6 +49,8 @@ var objectreciever = {
 		  	}
 		});
 		var query = "INSERT INTO "+tableName+" ("+keys+") VALUES ("+values+");";
+		
+		console.log(query);
 		var results = {};
 		var db = req.app.get('dbConnection');
 		db.query(query, function (err, rows, fields) {
@@ -70,13 +72,18 @@ var objectreciever = {
 			Object.keys(object).forEach(function(key) {
 				count++;
 				if(key !== "columnName" && key !== "columnItem"){
-				  	sets += key+"='"+object[key]+"'";
+					if(object[key] !== null)
+						sets += key+"='"+object[key]+"'";
+					else
+						sets += key+"="+object[key];
+				  	
 				  	if(lengthObject > count){
 						sets+= ",";
 				  	}
 			  	}
 			});
 			var query = "UPDATE "+tableName+" SET "+sets+" WHERE "+object.columnName+"='"+object.columnItem+"';";
+			console.log(query);
 			var results = {};
 			var db = req.app.get('dbConnection');
 			db.query(query, function (err, rows, fields) {

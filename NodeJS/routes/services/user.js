@@ -28,9 +28,11 @@ var user = {
 				columnName: "username",
 				columnItem: req.params.username
 			};
+			
+			console.log(req.body);
 			//set only values we want to update..
-			if(req.body.productId) 			object['productId'] = req.body.productId;
-			if(req.body.password) 			object['password'] = req.body.password;
+			if(typeof req.body.productId != 'undefined') 			object['productId'] = req.body.productId;
+			if(typeof req.body.password != 'undefined') 			object['password'] = req.body.password;
 
 		
 			objectreciever.updateObject(req, res, object, "user");
