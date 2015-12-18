@@ -16,19 +16,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
-import javax.xml.transform.ErrorListener;
-
-/**
- * Created by Raoul-Laptop on 8-12-2015.
- */
 public class JSONCommunicator {
 
     private static JSONCommunicator JSONCommunicator = null;
     private static Context context;
     private RequestQueue mRequestQueue;
-    private String answer;
 
     //TODO: Get this to fucking work
     /*
@@ -55,7 +50,7 @@ public class JSONCommunicator {
         if (null == JSONCommunicator)
         {
             throw new IllegalStateException(JSONCommunicator.class.getSimpleName() +
-                    " is not initialized, call getInstance(...) first");
+                    " is not initialized, call getInstance(context) first");
         }
         return JSONCommunicator;
     }
@@ -63,7 +58,7 @@ public class JSONCommunicator {
     //send login data to server
     public void login(String username, String password, final CommunicationInterface<String> listener)
     {
-        HashMap<String, String> params = new HashMap<String, String>();
+        HashMap<String, String> params = new HashMap<>();
         params.put("username", username);
         params.put("password", password);
 
@@ -93,24 +88,30 @@ public class JSONCommunicator {
     }
 
 
-    //check if the user already has a product reserved
-    public void getProductIDUser(final User user, final CommunicationInterface<String> listener)
+    //returns an Hashmap now
+    public void getObject(final String table, final String item,  final CommunicationInterface<HashMap<String, String>> listener)
     {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"user/"+user.getUsername(), new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+"/"+item,
+                new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                     try{
-                        System.out.println(response.toString());
-                        JSONObject object = response.getJSONArray("user").getJSONObject(0);
-                        System.out.println(object.toString());
+                        JSONObject object = response.getJSONArray(table).getJSONObject(0);
+                        HashMap<String, String> map = new HashMap<>();
 
-                        if(object.getInt("productId") != -1)
-                        {
-                            listener.getResponse("0");
+                        Iterator<String> keysItr = object.keys();
+                        while(keysItr.hasNext()) {
+                            String key = keysItr.next();
+                            String value = object.getString(key);
+
+                            map.put(key, value);
                         }
+
+                        listener.getResponse(map);
+
                     }catch (Exception error)
                     {
-
+                        System.out.println("ERROR! "+error.toString());
                     }
             }
         }, new Response.ErrorListener() {
@@ -118,52 +119,50 @@ public class JSONCommunicator {
             @Override
             public void onErrorResponse(VolleyError error) {
                 System.out.println("ERROR! "+error.toString());
-                listener.getResponse("3");
             }
         }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                System.out.println(user.getApiKey());
-                headers.put("X-Access-Token", user.getApiKey());
+                HashMap<String, String> headers = new HashMap<>();
+                System.out.println(DataCommunicator.getInstance().getUser().getApiKey());
+                headers.put("X-Access-Token", DataCommunicator.getInstance().getUser().getApiKey());
                 return headers;
             }
         };
-        System.out.println(url+"user/"+user.getUsername());
+        System.out.println(url+table+"/"+item);
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }
 
     //Retrieving all sensors from database
-    public void getAllProducts(final User user, final CommunicationInterface<ArrayList<Product>> listener)
+    public void getAllData(final String table, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener)
     {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"product", new Response.Listener<JSONObject>() {
-
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject response){
-                JSONArray jsonArray = null;
-                ArrayList<Product> products = new ArrayList<Product>();
+            public void onResponse(JSONObject object){
+                ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
                 try {
-                    jsonArray = response.getJSONArray("products");
+                    JSONArray jsonArray = object.getJSONArray(table);
+                    System.out.println(jsonArray.toString());
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        JSONObject jsonObject = jsonArray.optJSONObject(i);
+                        HashMap<String, String> map = new HashMap<>();
+
+                        Iterator<String> keysItr = jsonObject.keys();
+                        while(keysItr.hasNext()) {
+                            String key = keysItr.next();
+                            String value = jsonObject.getString(key);
+
+                            map.put(key, value);
+                        }
+                        arrayList.add(map);
+                    }
                 }catch (Exception e) {
                     System.out.println("Error!" + e.toString());
                 }
 
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    try {
-                        JSONObject object = response.getJSONArray("products").getJSONObject(i);
-                        Product product = new Product();
-                        product.setId(object.getInt("id"));
-                        product.setRoom(object.getString("roomName"));
-                        product.setLocation(object.getString("location"));
-                        products.add(product);
-
-                    } catch (JSONException error) {
-                        System.out.println("ERROR! " + error.toString());
-                    }
-                }
-                listener.getResponse(products);
+                listener.getResponse(arrayList);
             }
         }, new Response.ErrorListener() {
 
@@ -175,13 +174,40 @@ public class JSONCommunicator {
         }){
             @Override
             public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                System.out.println(user.getApiKey());
-                headers.put("X-Access-Token", user.getApiKey());
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("X-Access-Token", DataCommunicator.getInstance().getUser().getApiKey());
                 return headers;
             }
         };
         System.out.println(url+"product");
+        // Add the request to the RequestQueue.
+        this.getRequestQueue().add(jsObjRequest);
+    }
+
+    public void changeData(final String table, final HashMap<String, String> params, final CommunicationInterface<Integer> listener){
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.PUT, url+table+"/"+DataCommunicator.getInstance().getUser().getUsername(),
+                new JSONObject(params), new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                listener.getResponse(0);
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("ERROR! " + error.toString());
+                listener.getResponse(1);
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("X-Access-Token", DataCommunicator.getInstance().getUser().getApiKey());
+                return headers;
+            }
+        };
+        System.out.println(url+table);
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }

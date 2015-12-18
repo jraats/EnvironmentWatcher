@@ -8,7 +8,6 @@ import android.provider.ContactsContract;
 public class DataCommunicator {
     private static DataCommunicator dataCommunicator;
     private User user;
-    private Product product;
 
     private DataCommunicator() {
 
@@ -26,17 +25,10 @@ public class DataCommunicator {
         user = new User(username, apiKey);
     }
 
-    public void createProduct()    {
-        product = new Product();
-    }
-
 
     public User getUser(){
         return user;
     }
 
-    public Product getProduct(){
-        return product;
-    }
 
 }

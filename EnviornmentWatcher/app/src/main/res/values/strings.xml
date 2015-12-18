@@ -8,7 +8,7 @@
     <string name="editText_Selected_Product">Geen Product Geselecteerd</string>
     <string name="button_Unregister_Product">Uitschrijven</string>
 
-    <!--ProductOverview-->
+    <!--ProductOverviewActivity-->
     <string name="text_Current_Product">Huidig Product</string>
     <string name="button_Register_Product">Reserveer Product</string>
     <string name="text_Current_Temperature">Temperatuur</string>

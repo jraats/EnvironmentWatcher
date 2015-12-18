@@ -1,5 +1,6 @@
 package com.avans.enviornmentwatcher;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class ProductSelectorActivity extends AppCompatActivity {
@@ -27,20 +29,36 @@ public class ProductSelectorActivity extends AppCompatActivity {
         //set the textbox that looks if the user has already reserved a product
         //When the user clicks on it, it wil go to the product overview
         editText_Selected_Product = (EditText) findViewById(R.id.editText_Selected_Product);
-        editText_Selected_Product.setText(DataCommunicator.getInstance().getUser().getProductID());
         editText_Selected_Product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(DataCommunicator.getInstance().getUser().getProductID() != -1) {
+                    Intent i = new Intent(getApplicationContext(), ProductOverviewActivity.class);
+                    i.putExtra("product", editText_Selected_Product.getText());
+                    startActivity(i);
+                }
             }
         });
+
+        //selecting product
+        if(DataCommunicator.getInstance().getUser().getProductID() != -1)
+            editText_Selected_Product.setText(String.valueOf(DataCommunicator.getInstance().getUser().getProductID()));
 
         //Creating button with logic
         button_Unregister_Product=(Button) findViewById(R.id.button_Unregister_Product);
         button_Unregister_Product.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                HashMap<String, String> map = new HashMap<>();
+                map.put("productId", null);
+                JSONCommunicator.getInstance().changeData("user", map, new CommunicationInterface<Integer>() {
+                    @Override
+                    public void getResponse(Integer object) {
+                        if (object == 0)
+                            editText_Selected_Product.setText(null);
+                        //TODO: else error
+                    }
+                });
             }
         });
 
@@ -49,6 +67,13 @@ public class ProductSelectorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                int productID = getProductID(spinner_Room.getSelectedItem().toString(), spinner_Location.getSelectedItem().toString());
+                if(productID != -1){
+                    Intent i = new Intent(getApplicationContext(), ProductOverviewActivity.class);
+                    i.putExtra("product", productID);
+                    startActivity(i);
+                }
+
             }
         });
 
@@ -56,9 +81,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
         spinner_Room.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                System.out.println("test");
                 fillSecondSpinner(parent.getItemAtPosition(position).toString());
-
             }
 
             @Override
@@ -73,16 +96,21 @@ public class ProductSelectorActivity extends AppCompatActivity {
 
         //Get all products
         try {
-            JSONCommunicator.getInstance().getAllProducts(DataCommunicator.getInstance().getUser(),
-                    new CommunicationInterface<ArrayList<Product>>() {
+            JSONCommunicator.getInstance().getAllData("product", new CommunicationInterface<ArrayList<HashMap<String, String>>>() {
 
                         @Override
-                        public void getResponse(ArrayList<Product> object) {
+                        public void getResponse(ArrayList<HashMap<String, String>> object) {
+                            products = new ArrayList<>();
                             if (!object.equals(null)) {
-                                products = object;
+                                for(int i = 0; i < object.size(); i++)
+                                {
+                                    Product p = new Product();
+                                    p.setId(Integer.parseInt(object.get(i).get("id")));
+                                    p.setRoom(object.get(i).get("roomName"));
+                                    p.setLocation(object.get(i).get("location"));
+                                    products.add(p);
+                                }
                             }
-                            else
-                                products = new ArrayList<Product>();
 
                             fillFirstSpinner();
                         }
@@ -96,7 +124,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
     }
 
     private void fillFirstSpinner(){
-        List<String> spinnerArray =  new ArrayList<String>();
+        List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
         {
             if(!spinnerArray.contains(products.get(i).getRoom()))
@@ -110,7 +138,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
     }
 
     private void fillSecondSpinner(String room){
-        List<String> spinnerArray =  new ArrayList<String>();
+        List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
         {
 
@@ -122,5 +150,15 @@ public class ProductSelectorActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner_Location.setAdapter(adapter);
+    }
+
+    private int  getProductID(String room, String location){
+        for (int i = 0; i < products.size(); i++)
+        {
+            Product p = products.get(i);
+            if(p.getRoom().equals(room) && p.getLocation().equals(location))
+                return p.getId();
+        }
+        return -1;
     }
 }

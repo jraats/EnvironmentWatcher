@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import java.io.Console;
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,39 +35,35 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 JSONCommunicator.getInstance().login(editText_Username.getText().toString(), editText_Password.getText().toString(),
-                    new CommunicationInterface<String>() {
-                        @Override
-                        public void getResponse(String result) {
-                            if (!result.isEmpty()) {
-                                try {
-                                    DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
-                                    JSONCommunicator.getInstance().getProductIDUser(DataCommunicator.getInstance().getUser(),
-                                        new CommunicationInterface<String>() {
+                        new CommunicationInterface<String>() {
+                            @Override
+                            public void getResponse(String result) {
+                                if (!result.isEmpty()) {
+                                    try {
+                                        DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
+                                        JSONCommunicator.getInstance().getObject("user", DataCommunicator.getInstance().getUser().getUsername(),
+                                                new CommunicationInterface<HashMap<String, String>>() {
 
-                                            @Override
-                                            public void getResponse(String object) {
-                                                if (object.equals("0"))
-                                                {
-                                                    startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
-                                                }
-                                                else
-                                                    getAlert("Something went wrong, dunno what");
-                                            }
-                                        });
-                                }catch (Exception e){
+                                                    @Override
+                                                    public void getResponse(HashMap<String, String> object) {
+                                                        if (!object.get("productId").equals("null"))
+                                                            DataCommunicator.getInstance().getUser().setProductID(Integer.parseInt(object.get("productId")));
+                                                        else
+                                                            DataCommunicator.getInstance().getUser().setProductID(-1);
 
+                                                        startActivity(new Intent(getApplicationContext(), ProductSelectorActivity.class));
+
+                                                    }
+                                                });
+                                    }catch (Exception e) {
+                                        getAlert(e.toString());
+                                    }
+                                } else {
+                                    //Send an alert
+                                    getAlert("Wrong Username or Password");
                                 }
-
-                                    //Example of using data
-                                //Intent i = new Intent(getApplicationContext(), ProductSelectorActivity.class);
-                                //i.putExtra("key", value);
-
-                            } else {
-                                //Send an alert
-                                getAlert("Wrong Username or Password");
                             }
-                        }
-                    });
+                        });
                 }
         });
     }

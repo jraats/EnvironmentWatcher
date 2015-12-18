@@ -30,7 +30,7 @@
         </activity>
         <activity android:name=".ProductSelectorActivity" >
         </activity>
-        <activity android:name=".ProductOverview" >
+        <activity android:name=".ProductOverviewActivity" >
         </activity>
     </application>
 
