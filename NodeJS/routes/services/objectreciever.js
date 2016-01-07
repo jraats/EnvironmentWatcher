@@ -1,16 +1,33 @@
-var util = require('util');
-
-objectreciever = { 
+var mysql		= require('mysql');
+var util		= require('util');
+var objectreciever = { 
+	createMysqlConnection: function(app){
+		var settings = require('../../config.json');
+		var connection = mysql.createConnection(
+		{
+			host : settings.dbServer,
+			user : settings.dbUsername,
+			password : settings.dbPassword,
+			database : settings.dbScheme
+		});
+		app.set('dbConnection', connection);
+	},
 	getObject: function(req, res, query, objectResult){
+		
+			console.log("Going to send query");
 		if(objectResult === undefined){
 			objectResult = "results";
 		}
 		var results = {};
 		var db = req.app.get('dbConnection');
 		db.query(query, function (err, rows, fields) {
-			if(err) throw err;
-			results[objectResult] = rows;
-			res.json(results);
+			if(err){
+				objectreciever.createMysqlConnection(req.app);
+				res.json({status: "ERROR"});
+			}else{
+				results[objectResult] = rows;
+				res.json(results);
+			}
 		});
 	},
 	createObject: function(req, res, object, tableName){
@@ -32,11 +49,14 @@ objectreciever = {
 		  	}
 		});
 		var query = "INSERT INTO "+tableName+" ("+keys+") VALUES ("+values+");";
+		
+		console.log(query);
 		var results = {};
 		var db = req.app.get('dbConnection');
 		db.query(query, function (err, rows, fields) {
 			if(err){ 
-				res.json({status: "ERROR"}); 
+				objectreciever.createMysqlConnection(req.app);
+				res.json({status: "ERROR"});
 			}else{
 				res.json({status: "OK"});	
 			}
@@ -52,17 +72,23 @@ objectreciever = {
 			Object.keys(object).forEach(function(key) {
 				count++;
 				if(key !== "columnName" && key !== "columnItem"){
-				  	sets += key+"='"+object[key]+"'";
+					if(object[key] !== null)
+						sets += key+"='"+object[key]+"'";
+					else
+						sets += key+"="+object[key];
+				  	
 				  	if(lengthObject > count){
 						sets+= ",";
 				  	}
 			  	}
 			});
-			var query = "UPDATE "+tableName+" SET "+sets+" WHERE "+object.columnName+"="+object.columnItem+";";
+			var query = "UPDATE "+tableName+" SET "+sets+" WHERE "+object.columnName+"='"+object.columnItem+"';";
+			console.log(query);
 			var results = {};
 			var db = req.app.get('dbConnection');
 			db.query(query, function (err, rows, fields) {
 				if(err){ 
+					objectreciever.createMysqlConnection(req.app);
 					res.json({status: "ERROR"}); 
 				}else{
 					res.json({status: "OK"});	
@@ -75,17 +101,25 @@ objectreciever = {
 	},
 	DeleteObject: function(req, res, object, tableName){
 		
-		var query = "DELETE "+object.item+" FROM "+tableName+" WHERE "+object.columnName+"="+object.columnItem+";";
-		
+		var query = "DELETE FROM "+tableName+" WHERE "+object.columnName+" = '"+object.columnItem+"';";
 		var results = {};
 		var db = req.app.get('dbConnection');
 		db.query(query, function (err, rows, fields) {
 			if(err){ 
+				console.log(err);
+				objectreciever.createMysqlConnection(req.app);
 				res.json({status: "ERROR"}); 
 			}else{
 				res.json({status: "OK"});	
 			}
 		});
+	},
+	CheckForInjection: function(value)
+	{
+		if (/\s/.test(value)){
+			return true;
+		}
+		return false;
 	}
 	
 }
