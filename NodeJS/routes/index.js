@@ -21,6 +21,8 @@ router.get('/api/preferences/:userUsername', preferences.getPreferencesByUsernam
 
 router.get('/api/sensorData', sensorData.getSensorData);
 router.get('/api/sensorData/:productId', sensorData.getDataByProductId);
+router.get('/api/sensorData/getLatest/:productId', sensorData.getLatestDataByProductId);
+router.get('/api/sensorData/getDataByTime/:productId/:d1/:d2', sensorData.getDataByTime);
 
 //New data or update data in the database
 router.post('/api/user', user.createUser);

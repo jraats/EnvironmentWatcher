@@ -1,12 +1,13 @@
 <resources>
     <!--Login -->
-    <string name="app_name">EnviornmentWatcher</string>
+    <string name="app_name">EnvironmentWatcher</string>
     <string name="button_login">Aanmelden</string>
 
     <!--ProductSelector -->
     <string name="text_Reserved_Product">Gereserveerd Product</string>
     <string name="editText_Selected_Product">Geen Product Geselecteerd</string>
     <string name="button_Unregister_Product">Uitschrijven</string>
+    <string name="button_Select_Product">Bekijk Product</string>
 
     <!--ProductOverviewActivity-->
     <string name="text_Current_Product">Huidig Product</string>

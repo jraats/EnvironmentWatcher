@@ -41,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
                                 if (!result.isEmpty()) {
                                     try {
                                         DataCommunicator.getInstance().createUser(editText_Username.getText().toString(), result);
-                                        JSONCommunicator.getInstance().getObject("user", DataCommunicator.getInstance().getUser().getUsername(),
+                                        JSONCommunicator.getInstance().getObject("user", DataCommunicator.getInstance().getUser().getUsername(),"",
                                                 new CommunicationInterface<HashMap<String, String>>() {
 
                                                     @Override

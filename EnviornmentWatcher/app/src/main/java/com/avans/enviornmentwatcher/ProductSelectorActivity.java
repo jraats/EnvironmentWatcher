@@ -1,6 +1,7 @@
 package com.avans.enviornmentwatcher;
 
 import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -34,7 +35,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if(DataCommunicator.getInstance().getUser().getProductID() != -1) {
                     Intent i = new Intent(getApplicationContext(), ProductOverviewActivity.class);
-                    i.putExtra("product", editText_Selected_Product.getText());
+                    i.putExtra("product", DataCommunicator.getInstance().getUser().getProductID());
                     startActivity(i);
                 }
             }
@@ -54,8 +55,10 @@ public class ProductSelectorActivity extends AppCompatActivity {
                 JSONCommunicator.getInstance().changeData("user", map, new CommunicationInterface<Integer>() {
                     @Override
                     public void getResponse(Integer object) {
-                        if (object == 0)
+                        if (object == 0) {
+                            DataCommunicator.getInstance().getUser().setProductID(-1);
                             editText_Selected_Product.setText(null);
+                        }
                         //TODO: else error
                     }
                 });
@@ -135,6 +138,16 @@ public class ProductSelectorActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner_Room.setAdapter(adapter);
+    }
+
+    public void onResume() {
+        super.onResume();
+
+        if(DataCommunicator.getInstance().getUser().getProductID() != -1)
+            editText_Selected_Product.setText(String.valueOf(DataCommunicator.getInstance().getUser().getProductID()));
+        else
+            editText_Selected_Product.setText("Geen Product Geselecteerd");
+
     }
 
     private void fillSecondSpinner(String room){

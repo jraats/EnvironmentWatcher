@@ -29,7 +29,7 @@ public class JSONCommunicator {
     /*
     private String MyPREFERENCES = "myPrefs";
     private SharedPreferences sharedpreferences;*/
-    private String url = "http://145.48.205.34:8080/api/";
+    private String url = "http://85.144.219.90:1337/api/";
 
 
     private JSONCommunicator(Context context) {
@@ -89,9 +89,9 @@ public class JSONCommunicator {
 
 
     //returns an Hashmap now
-    public void getObject(final String table, final String item,  final CommunicationInterface<HashMap<String, String>> listener)
+    public void getObject(final String table, final String item, final String optional,  final CommunicationInterface<HashMap<String, String>> listener)
     {
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+"/"+item,
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+optional+"/"+item,
                 new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -143,7 +143,6 @@ public class JSONCommunicator {
                 ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
                 try {
                     JSONArray jsonArray = object.getJSONArray(table);
-                    System.out.println(jsonArray.toString());
                     for (int i = 0; i < jsonArray.length(); i++)
                     {
                         JSONObject jsonObject = jsonArray.optJSONObject(i);
@@ -179,7 +178,6 @@ public class JSONCommunicator {
                 return headers;
             }
         };
-        System.out.println(url+"product");
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }
@@ -211,6 +209,53 @@ public class JSONCommunicator {
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }
+
+    public void getSensorDataWithDate(final String d1,final String d2,final int id, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener){
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"sensordata/getDataBytime/"+id+"/"+d1+"/"+d2, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject object){
+                ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+                try {
+                    JSONArray jsonArray = object.getJSONArray("sensorData");
+                    for (int i = 0; i < jsonArray.length(); i++)
+                    {
+                        JSONObject jsonObject = jsonArray.optJSONObject(i);
+                        HashMap<String, String> map = new HashMap<>();
+
+                        Iterator<String> keysItr = jsonObject.keys();
+                        while(keysItr.hasNext()) {
+                            String key = keysItr.next();
+                            String value = jsonObject.getString(key);
+
+                            map.put(key, value);
+                        }
+                        arrayList.add(map);
+                    }
+                }catch (Exception e) {
+                    System.out.println("Error!" + e.toString());
+                }
+
+                listener.getResponse(arrayList);
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("ERROR! " + error.toString());
+                //listener.getResponse(new Product());
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                headers.put("X-Access-Token", DataCommunicator.getInstance().getUser().getApiKey());
+                return headers;
+            }
+        };
+        // Add the request to the RequestQueue.
+        this.getRequestQueue().add(jsObjRequest);
+    }
+
 
 
     private RequestQueue getRequestQueue() {

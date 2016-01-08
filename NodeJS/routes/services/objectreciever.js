@@ -14,7 +14,7 @@ var objectreciever = {
 	},
 	getObject: function(req, res, query, objectResult){
 		
-			console.log("Going to send query");
+			console.log(query);
 		if(objectResult === undefined){
 			objectResult = "results";
 		}
