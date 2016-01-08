@@ -34,6 +34,8 @@
         </activity>
         <activity android:name=".GraphActivity" >
         </activity>
+        <activity android:name=".SettingsActivity" >
+        </activity>
     </application>
 
 </manifest>

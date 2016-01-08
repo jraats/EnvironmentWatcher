@@ -29,7 +29,8 @@ public class JSONCommunicator {
     /*
     private String MyPREFERENCES = "myPrefs";
     private SharedPreferences sharedpreferences;*/
-    private String url = "http://85.144.219.90:1337/api/";
+    //private String url = "http://85.144.219.90:1337/api/";
+    private String url = "http://192.168.1.114:8080/api/";
 
 
     private JSONCommunicator(Context context) {

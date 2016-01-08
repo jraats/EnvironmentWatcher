@@ -17,7 +17,7 @@ public class ProductOverviewActivity extends AppCompatActivity {
 
     private EditText editText_Current_Temperature, editText_Current_Light;
     private TextView text_Current_Light, text_Current_Temperature;
-    private ImageButton imageButton_Back;
+    private ImageButton imageButton_Settings;
     private Button button_Register_Product;
     private Product product = new Product();
     private Timer timer;
@@ -40,8 +40,7 @@ public class ProductOverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), GraphActivity.class);
-                i.putExtra("light", 1);
-                i.putExtra("temperature", 0);
+                i.putExtra("item", "light");
                 startActivity(i);
             }
         });
@@ -50,17 +49,16 @@ public class ProductOverviewActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(getApplicationContext(), GraphActivity.class);
-                i.putExtra("light", 0);
-                i.putExtra("temperature", 1);
+                i.putExtra("item", "temperature");
                 startActivity(i);
             }
         });
-        imageButton_Back = (ImageButton) findViewById(R.id.imageButton_Back);
-        imageButton_Back.setOnClickListener(
+        imageButton_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
+        imageButton_Settings.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        System.out.println("Trying to go to new page");
+                        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                     }
                 }
         );
