@@ -1,0 +1,1 @@
+{	'API':{'username':'environmentWatcher','password':'LeidenGeheim12345','host': 'http://www.senzingyou.nl:7862/api'},'hardware':{},'hadoop':{'username':'hduser','password':'hadoop','host': 'RP0008'	},'actuator':{'sensors':{'temperature':{'inPin':1,'outPin':2},'light':{'inPin':3,'outPin':4}}},'productId':2,'debug':1}
