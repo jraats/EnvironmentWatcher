@@ -30,7 +30,7 @@ public class JSONCommunicator {
     private String MyPREFERENCES = "myPrefs";
     private SharedPreferences sharedpreferences;*/
     //private String url = "http://85.144.219.90:1337/api/";
-    private String url = "http://192.168.1.114:8080/api/";
+    private String url = "http://www.senzingyou.nl:7862/api/";
 
 
     private JSONCommunicator(Context context) {
@@ -89,7 +89,7 @@ public class JSONCommunicator {
     }
 
 
-    //returns an Hashmap now
+    //returns a object from the server
     public void getObject(final String table, final String item, final String optional,  final CommunicationInterface<HashMap<String, String>> listener)
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+optional+"/"+item,
@@ -113,6 +113,7 @@ public class JSONCommunicator {
                     }catch (Exception error)
                     {
                         System.out.println("ERROR! "+error.toString());
+                        listener.getResponse(new HashMap<String, String>());
                     }
             }
         }, new Response.ErrorListener() {
@@ -183,6 +184,7 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
+    //Changes data in the database
     public void changeData(final String table, final HashMap<String, String> params, final CommunicationInterface<Integer> listener){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.PUT, url+table+"/"+DataCommunicator.getInstance().getUser().getUsername(),
                 new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -211,6 +213,7 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
+    //returns all sensor data from a date (only 1 dat for now)
     public void getSensorDataWithDate(final String d1,final String d2,final int id, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"sensordata/getDataBytime/"+id+"/"+d1+"/"+d2, new Response.Listener<JSONObject>() {
             @Override
@@ -256,7 +259,6 @@ public class JSONCommunicator {
         // Add the request to the RequestQueue.
         this.getRequestQueue().add(jsObjRequest);
     }
-
 
 
     private RequestQueue getRequestQueue() {

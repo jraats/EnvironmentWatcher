@@ -1,18 +1,39 @@
 <resources>
+    <!--Global -->
+    <string name="toast_OperationSucces">Operatie geslaagd</string>
+    <string name="toast_OperationFailed">Operatie mislukt</string>
+
+
     <!--Login -->
     <string name="app_name">EnvironmentWatcher</string>
     <string name="button_login">Aanmelden</string>
+    <string name="alert_WrongUserPassword">Gebruikersnaam en wachtwoord komen niet overeen</string>
 
     <!--ProductSelector -->
     <string name="text_Reserved_Product">Gereserveerd Product</string>
     <string name="editText_Selected_Product">Geen Product Geselecteerd</string>
     <string name="button_Unregister_Product">Uitschrijven</string>
     <string name="button_Select_Product">Bekijk Product</string>
+    <string name="toast_UnsubscribeProductSucces">Succesvol uitgeschreven</string>
+    <string name="toast_UnsubscribeProductFailed">Uitschrijven mislukt</string>
 
     <!--ProductOverviewActivity-->
     <string name="text_Current_Product">Huidig Product</string>
     <string name="button_Register_Product">Reserveer Product</string>
     <string name="text_Current_Temperature">Temperatuur</string>
     <string name="text_Current_Light">Licht</string>
+    <string name="toast_SubscribeProductSucces">Succesvol ingeschreven</string>
+    <string name="toast_SubscribeProductFailed">Inschrijven mislukt</string>
+    <string name="button_See_User_Count">Bekijk inschrijvingen</string>
+
+    <!--SettingsActivity-->
+    <string name="text_Settings_Temperature">Temperatuur voorkeur</string>
+    <string name="text_Settings_Light">Licht voorkeur</string>
+    <string name="Button_Settings_SetPreferences">Sla voorkeur op</string>
+    <string name="button_Settings_ChangePassword">Verander wachtwoord</string>
+    <string name="alert_NoMatchingPasswords">Het nieuwe wachtwoord komt niet overeen</string>
+    <string name="alert_NoMatchingWithOldPassword">Het oude wachtwoord komt niet overeen met de nieuwe</string>
+    <string name="toast_ChangePreferenceSucces">Succesvol instellingen verandert</string>
+    <string name="toast_ChangePreferenceFailed">instellingen veranderen mislukt</string>
 
 </resources>

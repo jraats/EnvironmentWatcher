@@ -60,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
                                     }
                                 } else {
                                     //Send an alert
-                                    getAlert("Wrong Username or Password");
+                                    getAlert(getResources().getString(R.string.alert_WrongUserPassword));
                                 }
                             }
                         });

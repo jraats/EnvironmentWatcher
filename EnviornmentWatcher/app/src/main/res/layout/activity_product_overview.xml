@@ -9,19 +9,13 @@
     android:orientation="vertical"
     android:clickable="false">
 
+
     <RelativeLayout
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageButton_Settings"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+        android:layout_weight="1"
+        android:paddingTop="-100dp">
 
         <TextView
             android:id="@+id/text_Huidig_Product"
@@ -40,7 +34,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="4">
+        android:layout_weight="3">
 
         <RelativeLayout
             android:orientation="horizontal"
@@ -97,6 +91,13 @@
 
 
     </LinearLayout>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:text="@string/button_See_User_Count"
+        android:id="@+id/button_See_User_Count"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1" />
 
     <Button
         android:layout_width="match_parent"

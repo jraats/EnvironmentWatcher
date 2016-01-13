@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,9 +58,15 @@ public class ProductSelectorActivity extends AppCompatActivity {
                     public void getResponse(Integer object) {
                         if (object == 0) {
                             DataCommunicator.getInstance().getUser().setProductID(-1);
-                            editText_Selected_Product.setText(null);
+                            editText_Selected_Product.setText("Geen Product Geselecteerd");
+                            Toast.makeText(ProductSelectorActivity.this, getResources().getString(R.string.toast_UnsubscribeProductSucces),
+                                    Toast.LENGTH_SHORT).show();
+
                         }
-                        //TODO: else error
+                        else
+                            Toast.makeText(ProductSelectorActivity.this, getResources().getString(R.string.toast_UnsubscribeProductSucces),
+                                    Toast.LENGTH_SHORT).show();
+
                     }
                 });
             }
@@ -126,6 +133,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
 
     }
 
+    //Filling the first spinner with rooms
     private void fillFirstSpinner(){
         List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
@@ -140,16 +148,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
         spinner_Room.setAdapter(adapter);
     }
 
-    public void onResume() {
-        super.onResume();
-
-        if(DataCommunicator.getInstance().getUser().getProductID() != -1)
-            editText_Selected_Product.setText(String.valueOf(DataCommunicator.getInstance().getUser().getProductID()));
-        else
-            editText_Selected_Product.setText("Geen Product Geselecteerd");
-
-    }
-
+    //Filling the second spinner with locations from the room selected in first spinner
     private void fillSecondSpinner(String room){
         List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
@@ -163,6 +162,17 @@ public class ProductSelectorActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner_Location.setAdapter(adapter);
+    }
+
+    //When the screen is reselected
+    public void onResume() {
+        super.onResume();
+
+        if(DataCommunicator.getInstance().getUser().getProductID() != -1)
+            editText_Selected_Product.setText(String.valueOf(DataCommunicator.getInstance().getUser().getProductID()));
+        else
+            editText_Selected_Product.setText("Geen Product Geselecteerd");
+
     }
 
     private int  getProductID(String room, String location){

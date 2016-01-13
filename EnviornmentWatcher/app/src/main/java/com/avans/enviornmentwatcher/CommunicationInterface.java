@@ -5,5 +5,6 @@ package com.avans.enviornmentwatcher;
  */
 public interface CommunicationInterface<T>
 {
+    //Response Listener
     public void getResponse(T object);
 }

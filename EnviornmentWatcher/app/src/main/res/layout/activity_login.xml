@@ -11,7 +11,8 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="15"/>
+        android:layout_weight="15"
+        android:src="@drawable/front"/>
 
 
     <EditText
@@ -19,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
+        android:hint="Username"
         android:inputType="textVisiblePassword"/>
 
     <EditText
@@ -26,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5"
+        android:hint="Password"
         android:inputType="textPassword"/>
 
     <Button

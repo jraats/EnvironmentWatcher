@@ -23,12 +23,16 @@ public class GraphActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
+        //Get items sent from previous screen
+        //Check if the graph shows light or temperature
         Bundle extra = getIntent().getExtras();
         if(extra.get("item").equals("light"))
             item = "light";
         else
             item = "temperature";
 
+
+        //setup graph
         graph = (GraphView) findViewById(R.id.graph);
         graph.getViewport().setScrollable(true);
         graph.getViewport().setScalable(true);
@@ -51,9 +55,13 @@ public class GraphActivity extends AppCompatActivity {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
                 // create storage with points for graph to draw
+                // Reset so old data is removed
                 graph.removeAllSeries();
                 mSeries1 = new LineGraphSeries<DataPoint>();
                 graph.addSeries(mSeries1);
+
+                //Resets the viewport so it doesn't crash when the value is less then the previous values
+                graph.getViewport().scrollToEnd();
 
                 System.out.println("Going to generate Data");
 
@@ -68,6 +76,7 @@ public class GraphActivity extends AppCompatActivity {
     }
 
 
+    //Gets the Data from the server based on a date
     private void generateData(final String item, final String date) {
         JSONCommunicator.getInstance().getSensorDataWithDate(date, date, 2, new CommunicationInterface<ArrayList<HashMap<String, String>>>() {
             @Override
@@ -78,10 +87,13 @@ public class GraphActivity extends AppCompatActivity {
                 ArrayList<Integer> data = new ArrayList<Integer>();
                 ArrayList<DataPoint> values = new ArrayList<DataPoint>();
 
+                //normalize if there are more then 1000 values
+                //Graphview crashes otherwise
                 if(object.size() > 1000)
                     meanValue = object.size() / 1000;
 
                 System.out.println(meanValue);
+
 
                 for (int i = 0; i < object.size(); i++) {
                     if(item.equals("temperature"))
