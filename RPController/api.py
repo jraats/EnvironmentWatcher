@@ -2,7 +2,7 @@ import requests
 
 class Api:
 
-	def __init__(self, url='http://85.144.219.90:1337/api'):
+	def __init__(self, url=''):
 		self.authCode = None
 		self.url = url
 		self.modules = ['user', 'product', 'preferences', 'sensorData']
@@ -42,6 +42,14 @@ class Api:
 			request = requests.get(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
+		except ValueError:
+			raise
+			
+	def getPreferencesByProduct(self, id):
+		try:
+			request = requests.get(self.url + '/preferences/getByProductID/' + str(id), headers={'X-Access-Token': self.authCode})
+			return self.__getJsonResponse(request)
+		
 		except ValueError:
 			raise
 			
