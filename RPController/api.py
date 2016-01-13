@@ -2,7 +2,7 @@ import requests
 
 class Api:
 
-	def __init__(self, url='http://mywebdatabase.joostraats.nl/api'):
+	def __init__(self, url='http://85.144.219.90:1337/api'):
 		self.authCode = None
 		self.url = url
 		self.modules = ['user', 'product', 'preferences', 'sensorData']
@@ -13,10 +13,10 @@ class Api:
 
 	def login(self, username, password):
 		try:
-			request = requests.get(self.url + '/login')
+			request = requests.post(self.url + '/login', data={'username': username, 'password': password})
 			request.raise_for_status()
 			json = request.json()
-			self.authCode = json['code']
+			self.authCode = json['token']
 			
 		except ValueError:
 			raise
@@ -28,7 +28,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.get(self.url + '/' + module)
+			request = requests.get(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -39,7 +39,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.get(self.url + '/' + module + '/' + id)
+			request = requests.get(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -50,7 +50,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.post(self.url + '/' + module, data=data)
+			request = requests.post(self.url + '/' + module, data=data, headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -61,7 +61,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.put(self.url + '/' + module + '/' + id, data=data)
+			request = requests.put(self.url + '/' + module + '/' + str(id), data=data, headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -72,7 +72,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.delete(self.url + '/' + module)
+			request = requests.delete(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -83,7 +83,7 @@ class Api:
 			raise ValueError("module '" + module + "' is not found")
 		
 		try:
-			request = requests.delete(self.url + '/' + module + '/' + id)
+			request = requests.delete(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
 			return self.__getJsonResponse(request)
 			
 		except ValueError:

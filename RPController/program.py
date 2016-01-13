@@ -1,5 +1,19 @@
-import api
+import EnvironmentWatcher
+import ast
+import time
 
-n = api.Api()
-n.getAll('user')
-n.updateData('user', '1', {'username': 'gerret', 'pass': 'woord'})
+settings = []
+with open('settings.txt','r') as inf:
+    for line in inf:
+        settings.append(ast.literal_eval(line)) 
+
+watcher = EnvironmentWatcher.EnvironmentWatcher(settings[0])
+	
+print('Current product:')
+print('Room name:' + watcher.product['roomName'])
+print('Location:' + watcher.product['location'])
+
+while True:
+	watcher.process()
+	time.sleep(1)
+	
