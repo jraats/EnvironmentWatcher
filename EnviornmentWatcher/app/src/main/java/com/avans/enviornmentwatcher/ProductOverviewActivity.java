@@ -3,11 +3,14 @@ package com.avans.enviornmentwatcher;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -28,13 +31,15 @@ public class ProductOverviewActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_overview);
 
+        //Get items sent from previous screen
         Bundle extra = getIntent().getExtras();
-
+        //checks if there is an productID
         if (extra.get("product") != null)
             product.setId((int) extra.get("product"));
         else
             product.setId(-1);
 
+        //Set textboxes
         text_Current_Light = (TextView) findViewById(R.id.text_Current_Light);
         text_Current_Light.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,23 +58,16 @@ public class ProductOverviewActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-        imageButton_Settings = (ImageButton) findViewById(R.id.imageButton_Settings);
-        imageButton_Settings.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                    }
-                }
-        );
 
         editText_Current_Light = (EditText) findViewById(R.id.editText_Current_Light);
         editText_Current_Light.setEnabled(false);
         editText_Current_Temperature = (EditText) findViewById(R.id.editText_Current_Temperature);
         editText_Current_Temperature.setEnabled(false);
 
+        //Retrieves data from server
         updateData();
 
+        //Creating a button
         button_Register_Product = (Button) findViewById(R.id.button_Register_Product);
         button_Register_Product.setOnClickListener(new View.OnClickListener(){
 
@@ -82,10 +80,12 @@ public class ProductOverviewActivity extends AppCompatActivity {
                         @Override
                         public void getResponse(Integer object) {
                             if (0 == object) {
-                                System.out.println("reserved product");
+                                Toast.makeText(ProductOverviewActivity.this, getResources().getString(R.string.toast_SubscribeProductSucces),
+                                        Toast.LENGTH_SHORT).show();
                                 DataCommunicator.getInstance().getUser().setProductID(product.getId());
                             } else
-                                System.out.println("computer says no!");
+                                Toast.makeText(ProductOverviewActivity.this, getResources().getString(R.string.toast_SubscribeProductFailed),
+                                        Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -94,11 +94,27 @@ public class ProductOverviewActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_product_overview, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+        return true;
+    }
+
+    //Pauses the timer
     public void onPause(){
         super.onPause();
         timer.cancel();
     }
 
+    //Timer sending a update request every 30 seconds
     public void onResume(){
         super.onResume();
         try {
@@ -111,10 +127,11 @@ public class ProductOverviewActivity extends AppCompatActivity {
             };
             timer.schedule(timerTask, 30000, 30000);
         } catch (IllegalStateException e) {
-            android.util.Log.i("Damn", "resume error");
+            System.out.println("Timer Error");
         }
     }
 
+    //retrieves latest data from the server
     private void updateData(){
         if(product.getId() != -1) {
             JSONCommunicator.getInstance().getObject("sensorData", String.valueOf(product.getId()), "/getLatest",

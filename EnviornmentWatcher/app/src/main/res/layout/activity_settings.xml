@@ -24,7 +24,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
+                android:text="@string/text_Settings_Light"
+                android:textSize="20sp"
                 android:id="@+id/textView2"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
@@ -35,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText"
+                android:id="@+id/EditText_Settings_Light"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
@@ -50,8 +51,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="New Text"
-                android:id="@+id/textView3"
+                android:text="@string/text_Settings_Temperature"
+                android:textSize="20sp"
+                android:id="@+id/textView_Settings_Temperature"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
@@ -61,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"
                 android:ems="10"
-                android:id="@+id/editText"
+                android:id="@+id/EditText_Settings_Temperature"
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true" />
@@ -71,8 +73,8 @@
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New Button"
-            android:id="@+id/button"
+            android:text="@string/Button_Settings_SetPreferences"
+            android:id="@+id/button_Settings_ChangePreference"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
@@ -83,6 +85,13 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_gravity="center_horizontal">
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_Settings_ChangePassword"
+            android:id="@+id/button_Settings_ChangePassword"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 </LinearLayout>
