@@ -1,122 +1,83 @@
 import api
 import i2c
-import collections
+import sensor
+from time import gmtime, strftime
+import datetime
 
 class EnvironmentWatcher:
 
 	def __init__(self, settings):
-		self.settings = settings
-		self.debug = settings['debug']
-		if(self.debug):
-			print('Start EnvironmentWatcher')
-			
+		self.debug = settings['debug']			
+		self.productId = settings['productId']
+		self.sensors_slave_addr = settings['hardware']['sensors_slave_addr']
+		self.arduino_slave_addr = settings['hardware']['arduino_slave_addr']
+		self.sendSensorDataDuration = settings['sendSensorDataDuration']
+		self.lastSendSensorData = datetime.datetime.now()
+		
 		self.api = api.Api(settings['API']['host'])
 		self.api.login(settings['API']['username'],settings['API']['password'])
 		
-		if(self.debug):
-			print('Login successfull')
-			
-		self.loadProduct()
-#		self.product = {'roomName': 'test', 'location': 'ergens'}
+		try:
+			self.loadProduct(self.productId)
+		except:
+			raise
 		
 		self.i2c = i2c.I2c()
-		self.data = {}
-		self.data['temperature'] = collections.deque(maxlen=20)
-		self.data['light'] = collections.deque(maxlen=20)
+		self.sensors = []
+		self.initializeSensors(settings)
+		
+		print('started at')
+		print(self.lastSendSensorData)
+	
+	def initializeSensors(self, settings):
+		for dataSensor in settings['sensors']:
+			data = settings['sensors'][dataSensor]
+			self.sensors.append(
+				sensor.Sensor(
+					data['datalength'], data['apiName'], data['apiTresholdName'],
+					data['cmdCode'], data['percentageFactor']))
 
-	def loadProduct(self):
-		product = self.api.getById('product', self.settings['productId'])
+	def loadProduct(self, id):
+		product = self.api.getById('product', id)
 		if(len(product['product']) == 0):
-			if(self.debug):
-				print('Product not found!')
-				sys.exit(1)
+			raise ValueError("Product not found")
 		else:
 			self.product = product['product'][0]
 		
-	def getPreferenceData(self):
-		if(self.debug):
-			print('Get all preferences for product')
-		users = self.api.getAll('user')
-		foundPreferences = []
-		for user in users['user']:
-			if user['productId'] == self.settings['productId']:
-				preference = self.api.getById('preferences', user['username'])
-				if(len(preference['preferences']) != 0):
-					foundPreferences.append(preference['preferences'][0])
-				else:
-					if(self.debug):
-						print('Preference of ' + user['username'] + ' not found. Skip!')
+	def updatePreferenceData(self):
+		preferences = self.api.getPreferencesByProduct(self.productId)
+		preferences = preferences['preferences']
 
-		#TEMP
-#		foundPreferences.append({'lightTreshold': 16, 'temperatureTreshold': 20})
-#		foundPreferences.append({'lightTreshold': 17, 'temperatureTreshold': 21})
-		#caluclate treshold light and temprature
-		avgLightTreshold = 0.0
-		avgTemperatureTreshold = 0.0
-		for preference in foundPreferences:
-			avgLightTreshold += preference['lightTreshold']
-			avgTemperatureTreshold += preference['temperatureTreshold']
+		for sensor in self.sensors:
+			sensor.clearPreferences()
 
-		avgLightTreshold /= len(foundPreferences)
-		avgTemperatureTreshold /= len(foundPreferences)
-		return {'light': avgLightTreshold, 'temperature': avgTemperatureTreshold}
-
-	def process(self):
-		prefdata = self.getPreferenceData()
-		print('light treshold')
-		print(prefdata['light'])
-		print('temp treshold')
-		print(prefdata['temperature'])
-
-		self.data['light'].append(self.i2c.readSensorLight())
-		self.data['temperature'].append(self.i2c.readSensorTemperature())
-		self.data['light'].append(self.i2c.readSensorLight())
-		self.data['temperature'].append(self.i2c.readSensorTemperature())
-		
-		print('data light')
-		print(self.data['light'])
-		
-		print('data temperature')
-		print(self.data['temperature'])
-		
-		avgLight = self.getDataAverage(self.data['light'])
-		avgTemperature = self.getDataAverage(self.data['temperature'])
-		
-		print('avg light')
-		print(avgLight)
-		
-		print('avg temperature')
-		print(avgTemperature)
-		
-		diffLight = avgLight - prefdata['light']
-		diffTemperature = avgTemperature - prefdata['temperature']
-		
-		print('diff light')
-		print(diffLight)
-		
-		print('diff temperature')
-		print(diffTemperature)
-		
-		temperaturePercentage = diffTemperature * 50
-		lightPercentage = diffLight * 25
-		
-		print('percent light')
-		print(lightPercentage)
-		
-		print('percent temperature')
-		print(temperaturePercentage)
-		
-		print('light speed angle')
-		print(self.getSpeedAngle(lightPercentage))
-		
-		self.i2c.setTemperatureServo(self.getSpeedAngle(temperaturePercentage))
-		self.i2c.setLightServo(self.getSpeedAngle(lightPercentage))
-		
-	def getDataAverage(self, data):
-		total = sum(data)
-		return total / float(len(data))
-		
-	def getSpeedAngle(self, procent):
-		procent = max(-100, min(procent, 100))
-		return int((procent / 100 * 90) + 90)
+		for preference in preferences:
+			for sensor in self.sensors:
+				sensor.addPreference(preference)
 	
+	def process(self):
+		self.updatePreferenceData()
+		
+		apiData = {
+				'time': strftime("%Y-%m-%dT%H:%M:%S"),
+				'productId': self.productId}
+		
+		for sensor in self.sensors:
+			sensor.addSensorData(self.i2c.readSensorTemperature())
+			
+			sensorOutput = sensor.getDataAverage()
+			apiData[sensor.apiName] = sensorOutput
+			
+			percentage = sensor.getChangePercentage(sensor.getPreferenceAverage() - sensorOutput)
+			print(sensor.apiName)
+			print(percentage)
+			self.i2c.writeRegisterByte(self.arduino_slave_addr,sensor.cmdCode, sensor.getSpeedAngle(percentage))
+		
+		print(apiData)
+		if((datetime.datetime.now() - self.lastSendSensorData).total_seconds() >= self.sendSensorDataDuration):
+			self.lastSendSensorData = datetime.datetime.now()
+			self.api.newData('sensorData', apiData)
+			
+	def exit(self):
+		for sensor in self.sensors:
+			self.i2c.writeRegisterByte(self.arduino_slave_addr,sensor.cmdCode, sensor.getSpeedAngle(0))

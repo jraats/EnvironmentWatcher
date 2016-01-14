@@ -25,18 +25,6 @@ class I2c:
 		time.sleep(0.001)
 		return data
 
-	def getTemperatureServo(self):
-		return self.readRegisterByte(0x04, 0x03)
-		
-	def setTemperatureServo(self, angle):
-		self.writeRegisterByte(0x04, 0x03, angle)
-	
-	def getLightServo(self):
-		return self.readRegisterByte(0x04, 0x05)	
-	
-	def setLightServo(self, speed):
-		self.writeRegisterByte(0x04, 0x05, speed)
-	
 	def readSensorTemperature(self):
 		#return self.readByte(0x01)
 		return 17 + uniform(0, 3)
