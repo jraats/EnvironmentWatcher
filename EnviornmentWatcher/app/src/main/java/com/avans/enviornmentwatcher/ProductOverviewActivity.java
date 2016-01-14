@@ -1,17 +1,27 @@
 package com.avans.enviornmentwatcher;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -20,8 +30,7 @@ public class ProductOverviewActivity extends AppCompatActivity {
 
     private EditText editText_Current_Temperature, editText_Current_Light;
     private TextView text_Current_Light, text_Current_Temperature;
-    private ImageButton imageButton_Settings;
-    private Button button_Register_Product;
+    private Button button_Register_Product, button_See_User_Count;
     private Product product = new Product();
     private Timer timer;
     private TimerTask timerTask;
@@ -92,6 +101,46 @@ public class ProductOverviewActivity extends AppCompatActivity {
             }
         });
 
+        button_See_User_Count = (Button) findViewById(R.id.button_See_User_Count);
+        button_See_User_Count.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(product.getId() != -1) {
+                    JSONCommunicator.getInstance().getMultibleData("preferences", "" + product.getId(), "/getByProductID",
+                            new CommunicationInterface<ArrayList<HashMap<String, String>>>() {
+                                @Override
+                                public void getResponse(ArrayList<HashMap<String, String>> object) {
+                                    if (!object.equals(null)) {
+
+                                        AlertDialog.Builder builder = new AlertDialog.Builder(ProductOverviewActivity.this);
+                                        builder.setTitle("Gebruikers");
+                                        ListView layout = new ListView(ProductOverviewActivity.this);
+                                        ArrayAdapter<String> adapter= new ArrayAdapter<String>(ProductOverviewActivity.this,
+                                                android.R.layout.simple_list_item_1);
+
+                                        for(int i = 0; i < object.size(); i++)
+                                        {
+                                            adapter.add((object.get(i).get("userUsername")));
+                                        }
+
+
+                                        layout.setAdapter(adapter);
+
+                                        builder.setView(layout);
+                                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.cancel();
+                                            }
+                                        });
+                                        builder.show();
+                                    }
+                                }
+                            }
+                    );
+                }
+            }
+        });
     }
 
     @Override
@@ -151,5 +200,4 @@ public class ProductOverviewActivity extends AppCompatActivity {
         else
             System.out.println("No valid productID");
     }
-
 }

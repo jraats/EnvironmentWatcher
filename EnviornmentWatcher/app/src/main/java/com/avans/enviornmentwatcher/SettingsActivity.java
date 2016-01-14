@@ -32,13 +32,15 @@ public class SettingsActivity extends AppCompatActivity {
         JSONCommunicator.getInstance().getObject("preferences", DataCommunicator.getInstance().getUser().getUsername(), "", new CommunicationInterface<HashMap<String, String>>() {
             @Override
             public void getResponse(HashMap<String, String> object) {
-                if(object.isEmpty()){
-                    editText_Settings_Temperature.setText("0");
-                    editText_Settings_Light.setText(object.get("0"));
-                }else{
+                if(object.get("temperatureTreshold").equals("null"))
+                    editText_Settings_Temperature.setHint(object.get("temperatureTreshold"));
+                else
                     editText_Settings_Temperature.setText(object.get("temperatureTreshold"));
+
+                if(object.get("temperatureTreshold").equals("null"))
+                    editText_Settings_Light.setHint(object.get("lightTreshold"));
+                else
                     editText_Settings_Light.setText(object.get("lightTreshold"));
-                }
             }
         });
 
@@ -47,20 +49,23 @@ public class SettingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (!editText_Settings_Light.getText().toString().equals("") && !editText_Settings_Temperature.getText().toString().equals("")) {
                     HashMap<String, String> map = new HashMap<String, String>();
-                    map.put("lightTreshold", editText_Settings_Light.getText().toString());
-                    map.put("temperatureTreshold", editText_Settings_Temperature.getText().toString());
+                    if(Integer.parseInt(editText_Settings_Light.getText().toString()) < 99 && Integer.parseInt(editText_Settings_Light.getText().toString()) > 0){
+                        map.put("lightTreshold", editText_Settings_Light.getText().toString());
+                        map.put("temperatureTreshold", editText_Settings_Temperature.getText().toString());
 
-                    JSONCommunicator.getInstance().changeData("preferences", map, new CommunicationInterface<Integer>() {
-                        @Override
-                        public void getResponse(Integer object) {
-                            if(object == 0)
-                                Toast.makeText(SettingsActivity.this, getResources().getString(R.string.toast_ChangePreferenceSucces),
-                                        Toast.LENGTH_SHORT).show();
-                            else
-                                Toast.makeText(SettingsActivity.this, getResources().getString(R.string.toast_ChangePreferenceFailed),
-                                        Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                        JSONCommunicator.getInstance().changeData("preferences", map, new CommunicationInterface<Integer>() {
+                            @Override
+                            public void getResponse(Integer object) {
+                                if(object == 0)
+                                    Toast.makeText(SettingsActivity.this, getResources().getString(R.string.toast_ChangePreferenceSucces),
+                                            Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(SettingsActivity.this, getResources().getString(R.string.toast_ChangePreferenceFailed),
+                                            Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+
                 }
                 //TODO: else error
             }
@@ -99,7 +104,7 @@ public class SettingsActivity extends AppCompatActivity {
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (passwordNew.getText().toString().equals(passwordNew2.getText().toString())) {
+                        if (passwordNew.getText().toString().equals(passwordNew2.getText().toString()) && !passwordNew.getText().toString().equals("")) {
                             JSONCommunicator.getInstance().getObject("user", DataCommunicator.getInstance().getUser().getUsername(),
                                     "", new CommunicationInterface<HashMap<String, String>>() {
                                         @Override

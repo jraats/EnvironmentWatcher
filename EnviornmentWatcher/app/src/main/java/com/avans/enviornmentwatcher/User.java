@@ -6,7 +6,8 @@ package com.avans.enviornmentwatcher;
 public class User {
     private String username, apiKey;
     int productID;
-    int lightPreference,temperaturePreference;
+    int lightPreference;
+    double temperaturePreference;
 
 
     public User(String username, String apiKey){
@@ -39,11 +40,11 @@ public class User {
         this.lightPreference = lightPreference;
     }
 
-    public int getTemperaturePreference() {
+    public double getTemperaturePreference() {
         return temperaturePreference;
     }
 
-    public void setTemperaturePreference(int temperaturePreference) {
+    public void setTemperaturePreference(double temperaturePreference) {
         this.temperaturePreference = temperaturePreference;
     }
 }
