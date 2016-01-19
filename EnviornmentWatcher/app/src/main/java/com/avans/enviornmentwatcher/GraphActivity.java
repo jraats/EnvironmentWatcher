@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CalendarView;
+import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -16,21 +17,27 @@ public class GraphActivity extends AppCompatActivity {
     GraphView graph;
     CalendarView calenderView;
     LineGraphSeries<DataPoint> mSeries1;
+    TextView text_Sensor_Item;;
     String item;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
+        text_Sensor_Item = (TextView) findViewById(R.id.text_Sensor_Item);
 
         //Get items sent from previous screen
         //Check if the graph shows light or temperature
         Bundle extra = getIntent().getExtras();
-        if(extra.get("item").equals("light"))
+        if(extra.get("item").equals("light")){
+            text_Sensor_Item.setText(getResources().getString(R.string.text_Item_Light));
             item = "light";
-        else
-            item = "temperature";
 
+        }
+        else{
+            text_Sensor_Item.setText(getResources().getString(R.string.text_Item_Temperature));
+            item = "temperature";
+        }
 
         //setup graph
         graph = (GraphView) findViewById(R.id.graph);
@@ -84,7 +91,7 @@ public class GraphActivity extends AppCompatActivity {
                 int meanValue = 1;
                 int index = 0;
                 int time = 0;
-                ArrayList<Integer> data = new ArrayList<Integer>();
+                ArrayList<Double> data = new ArrayList<Double>();
                 ArrayList<DataPoint> values = new ArrayList<DataPoint>();
 
                 //normalize if there are more then 1000 values
@@ -92,18 +99,17 @@ public class GraphActivity extends AppCompatActivity {
                 if(object.size() > 1000)
                     meanValue = object.size() / 1000;
 
-                System.out.println(meanValue);
-
-
                 for (int i = 0; i < object.size(); i++) {
+                    System.out.println(item);
+
                     if(item.equals("temperature"))
-                        data.add(Integer.valueOf(object.get(i).get("temperature")));
+                        data.add(Double.parseDouble(object.get(i).get("temperature")));
                     else
-                        data.add(Integer.valueOf(object.get(i).get("light")));
+                        data.add(Double.parseDouble(object.get(i).get("light")));
 
                     if(i == (index+meanValue)-1)
                     {
-                        int value = 0;
+                        double value = 0;
                         for(int ii = 0; ii < data.size(); ii++)
                         {
                             value = value + data.get(ii);
@@ -111,12 +117,11 @@ public class GraphActivity extends AppCompatActivity {
 
                         value = (value/data.size());
                         int pp= index+meanValue-1;
-                        System.out.println(pp);
                         mSeries1.appendData(new DataPoint(time, value), true, 40);
 
                         index=i+1;
                         time = time+1;
-                        data = new ArrayList<Integer>();
+                        data = new ArrayList<>();
                     }
                 }
             }

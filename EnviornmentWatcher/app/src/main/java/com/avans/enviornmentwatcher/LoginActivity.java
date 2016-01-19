@@ -76,7 +76,7 @@ public class LoginActivity extends AppCompatActivity {
         AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
 
         dlgAlert.setMessage(argument);
-        dlgAlert.setTitle("Error Message...");
+        dlgAlert.setTitle("Foutmelding!");
         dlgAlert.setPositiveButton("OK", null);
         dlgAlert.setCancelable(true);
         dlgAlert.create().show();

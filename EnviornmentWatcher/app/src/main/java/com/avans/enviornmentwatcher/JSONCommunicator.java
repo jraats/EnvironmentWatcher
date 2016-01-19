@@ -136,6 +136,56 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
+    public void getMultibleData(final String table, final String item, final String optional,
+                                final CommunicationInterface<ArrayList<HashMap<String, String>>> listener)
+    {
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+optional+"/"+item,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject object) {
+                        ArrayList<HashMap<String, String>> arrayList = new ArrayList<>();
+                        try {
+                            JSONArray jsonArray = object.getJSONArray(table);
+                            for (int i = 0; i < jsonArray.length(); i++)
+                            {
+                                JSONObject jsonObject = jsonArray.optJSONObject(i);
+                                HashMap<String, String> map = new HashMap<>();
+
+                                Iterator<String> keysItr = jsonObject.keys();
+                                while(keysItr.hasNext()) {
+                                    String key = keysItr.next();
+                                    String value = jsonObject.getString(key);
+
+                                    map.put(key, value);
+                                }
+                                arrayList.add(map);
+                            }
+                        }catch (Exception e) {
+                            System.out.println("Error!" + e.toString());
+                        }
+
+                        listener.getResponse(arrayList);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println("ERROR! "+error.toString());
+            }
+        }){
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                HashMap<String, String> headers = new HashMap<>();
+                System.out.println(DataCommunicator.getInstance().getUser().getApiKey());
+                headers.put("X-Access-Token", DataCommunicator.getInstance().getUser().getApiKey());
+                return headers;
+            }
+        };
+        System.out.println(url+table+"/"+item);
+        // Add the request to the RequestQueue.
+        this.getRequestQueue().add(jsObjRequest);
+    }
+
     //Retrieving all sensors from database
     public void getAllData(final String table, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener)
     {

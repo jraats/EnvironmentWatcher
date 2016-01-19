@@ -1,13 +1,14 @@
 <resources>
     <!--Global -->
+    <string name="app_name">EnvironmentWatcher</string>
     <string name="toast_OperationSucces">Operatie geslaagd</string>
     <string name="toast_OperationFailed">Operatie mislukt</string>
 
-
     <!--Login -->
-    <string name="app_name">EnvironmentWatcher</string>
     <string name="button_login">Aanmelden</string>
     <string name="alert_WrongUserPassword">Gebruikersnaam en wachtwoord komen niet overeen</string>
+    <string name="hint_Username">Gebruikersnaam</string>
+    <string name="hint_Password">Wachtwoord</string>
 
     <!--ProductSelector -->
     <string name="text_Reserved_Product">Gereserveerd Product</string>
@@ -35,5 +36,9 @@
     <string name="alert_NoMatchingWithOldPassword">Het oude wachtwoord komt niet overeen met de nieuwe</string>
     <string name="toast_ChangePreferenceSucces">Succesvol instellingen verandert</string>
     <string name="toast_ChangePreferenceFailed">instellingen veranderen mislukt</string>
+
+    <!--Login -->
+    <string name="text_Item_Temperature">Temperatuur</string>
+    <string name="text_Item_Light">Licht</string>
 
 </resources>

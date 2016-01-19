@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -58,13 +60,13 @@ public class ProductSelectorActivity extends AppCompatActivity {
                     public void getResponse(Integer object) {
                         if (object == 0) {
                             DataCommunicator.getInstance().getUser().setProductID(-1);
-                            editText_Selected_Product.setText("Geen Product Geselecteerd");
+                            editText_Selected_Product.setText(getResources().getString(R.string.editText_Selected_Product));
                             Toast.makeText(ProductSelectorActivity.this, getResources().getString(R.string.toast_UnsubscribeProductSucces),
                                     Toast.LENGTH_SHORT).show();
 
                         }
                         else
-                            Toast.makeText(ProductSelectorActivity.this, getResources().getString(R.string.toast_UnsubscribeProductSucces),
+                            Toast.makeText(ProductSelectorActivity.this, getResources().getString(R.string.toast_UnsubscribeProductFailed),
                                     Toast.LENGTH_SHORT).show();
 
                     }
@@ -121,7 +123,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
                                     products.add(p);
                                 }
                             }
-
+                            onResume();
                             fillFirstSpinner();
                         }
                     });
@@ -129,8 +131,20 @@ public class ProductSelectorActivity extends AppCompatActivity {
         {
             System.out.println("Error" + e.toString());
         }
+    }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_product_overview, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+        return true;
     }
 
     //Filling the first spinner with rooms
@@ -168,10 +182,13 @@ public class ProductSelectorActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
 
-        if(DataCommunicator.getInstance().getUser().getProductID() != -1)
-            editText_Selected_Product.setText(String.valueOf(DataCommunicator.getInstance().getUser().getProductID()));
+        if(DataCommunicator.getInstance().getUser().getProductID() != -1) {
+            Product p = getProductRoomLocation(DataCommunicator.getInstance().getUser().getProductID());
+            if(p != null)
+                editText_Selected_Product.setText(p.getRoom() + ": " + p.getLocation());
+        }
         else
-            editText_Selected_Product.setText("Geen Product Geselecteerd");
+            editText_Selected_Product.setText(getResources().getString(R.string.editText_Selected_Product));
 
     }
 
@@ -183,5 +200,16 @@ public class ProductSelectorActivity extends AppCompatActivity {
                 return p.getId();
         }
         return -1;
+    }
+
+    private Product getProductRoomLocation(int id){
+        if(products != null) {
+            for (int i = 0; i < products.size(); i++) {
+                Product p = products.get(i);
+                if (p.getId() == id)
+                    return p;
+            }
+        }
+        return null;
     }
 }
