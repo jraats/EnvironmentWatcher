@@ -2,18 +2,20 @@ import requests
 
 class Api:
 
-	def __init__(self, url=''):
+	def __init__(self, url='', username='', password=''):
 		self.authCode = None
 		self.url = url
+		self.username = username
+		self.password = password
 		self.modules = ['user', 'product', 'preferences', 'sensorData']
 		
 	def __getJsonResponse(self, request):
 		request.raise_for_status()
 		return request.json()
 
-	def login(self, username, password):
+	def login(self):
 		try:
-			request = requests.post(self.url + '/login', data={'username': username, 'password': password})
+			request = requests.post(self.url + '/login', data={'username': self.username, 'password': self.password})
 			request.raise_for_status()
 			json = request.json()
 			self.authCode = json['token']
@@ -29,6 +31,10 @@ class Api:
 		
 		try:
 			request = requests.get(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				self.login()
+				request = request.get(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -40,6 +46,10 @@ class Api:
 		
 		try:
 			request = requests.get(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				self.login()
+				request = requests.get(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -48,6 +58,10 @@ class Api:
 	def getPreferencesByProduct(self, id):
 		try:
 			request = requests.get(self.url + '/preferences/getByProductID/' + str(id), headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				self.login()
+				request = requests.get(self.url + '/preferences/getByProductID/' + str(id), headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 		
 		except ValueError:
@@ -59,6 +73,10 @@ class Api:
 		
 		try:
 			request = requests.post(self.url + '/' + module, data=data, headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				self.login()
+				request = requests.post(self.url + '/' + module, data=data, headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -70,6 +88,10 @@ class Api:
 		
 		try:
 			request = requests.put(self.url + '/' + module + '/' + str(id), data=data, headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				self.login()
+				request = requests.put(self.url + '/' + module + '/' + str(id), data=data, headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -81,6 +103,9 @@ class Api:
 		
 		try:
 			request = requests.delete(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				request = requests.delete(self.url + '/' + module, headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:
@@ -92,6 +117,9 @@ class Api:
 		
 		try:
 			request = requests.delete(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
+			if(request.status_code == 401):
+				request = requests.delete(self.url + '/' + module + '/' + str(id), headers={'X-Access-Token': self.authCode})
+				
 			return self.__getJsonResponse(request)
 			
 		except ValueError:

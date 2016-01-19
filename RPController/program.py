@@ -9,6 +9,7 @@ with open('settings','r') as inf:
         settings.append(ast.literal_eval(line)) 
 
 sleepDuration = settings[0]['retrieveSensorDataDuration']		
+watcher = None
 try:
 	watcher = EnvironmentWatcher.EnvironmentWatcher(settings[0])
 	
@@ -24,8 +25,7 @@ try:
 		if(sleepAmount > 0):
 			time.sleep(sleepAmount)
 #		break
-except:
-	watcher.exit()
-	raise
-watcher.exit()
+finally:
+	if(watcher != None):
+		watcher.exit()
 	

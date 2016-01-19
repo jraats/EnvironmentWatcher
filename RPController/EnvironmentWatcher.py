@@ -1,8 +1,10 @@
 import api
 import i2c
 import sensor
+import hadoop
 from time import gmtime, strftime
 import datetime
+from threading import Thread
 
 class EnvironmentWatcher:
 
@@ -12,10 +14,11 @@ class EnvironmentWatcher:
 		self.sensors_slave_addr = settings['hardware']['sensors_slave_addr']
 		self.arduino_slave_addr = settings['hardware']['arduino_slave_addr']
 		self.sendSensorDataDuration = settings['sendSensorDataDuration']
+		self.useHadoop = settings['useHadoop']
 		self.lastSendSensorData = datetime.datetime.now()
 		
-		self.api = api.Api(settings['API']['host'])
-		self.api.login(settings['API']['username'],settings['API']['password'])
+		self.api = api.Api(settings['API']['host'],settings['API']['username'],settings['API']['password'])
+		self.api.login()
 		
 		try:
 			self.loadProduct(self.productId)
@@ -23,6 +26,8 @@ class EnvironmentWatcher:
 			raise
 		
 		self.i2c = i2c.I2c()
+		if(self.useHadoop):
+			self.hadoop = hadoop.Hadoop(settings['hadoop']['host'],settings['hadoop']['username'],settings['hadoop']['password'])
 		self.sensors = []
 		self.initializeSensors(settings)
 		
@@ -66,18 +71,49 @@ class EnvironmentWatcher:
 			sensor.addSensorData(self.i2c.readSensorTemperature())
 			
 			sensorOutput = sensor.getDataAverage()
-			apiData[sensor.apiName] = sensorOutput
+			if(self.useHadoop == 0):
+				apiData[sensor.apiName] = sensorOutput
 			
 			percentage = sensor.getChangePercentage(sensor.getPreferenceAverage() - sensorOutput)
 			print(sensor.apiName)
 			print(percentage)
 			self.i2c.writeRegisterByte(self.arduino_slave_addr,sensor.cmdCode, sensor.getSpeedAngle(percentage))
 		
-		print(apiData)
 		if((datetime.datetime.now() - self.lastSendSensorData).total_seconds() >= self.sendSensorDataDuration):
 			self.lastSendSensorData = datetime.datetime.now()
-			self.api.newData('sensorData', apiData)
-			
+			if(self.useHadoop == 0):
+				print("send api data")
+				print(apiData)
+				self.api.newData('sensorData', apiData)
+			else:
+				thread = Thread(target = self.runHadoopAverageCommands, args=(apiData, ))
+				thread.start()
+				
+	def runHadoopAverageCommands(self, apiData):
+		print("started the hadoop thread!")
+		threads = []
+		for sensor in self.sensors:
+			thread = Thread(target = self.processAverage, args=(apiData, sensor, ))
+			thread.start()
+			threads.append(thread)
+		
+		for thread in threads:
+			thread.join()
+		print("all threads finished")
+		print("data:")
+		print(apiData)
+		self.api.newData('sensorData', apiData)
+		print("Complete hadoop thread finished")
+		
+	def processAverage(self, apiData, sensor):
+		print("started thread get data for sensor " + sensor.apiName)
+		output = self.hadoop.createUploadWaitDownloadCatRemove(sensor.sensorData, sensor.apiName)
+		apiData[sensor.apiName] = output
+		print("thread for " + sensor.apiName + " finished!")
+	
 	def exit(self):
 		for sensor in self.sensors:
 			self.i2c.writeRegisterByte(self.arduino_slave_addr,sensor.cmdCode, sensor.getSpeedAngle(0))
+		
+		if(self.useHadoop):
+			self.hadoop.close()
