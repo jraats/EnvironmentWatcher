@@ -32,6 +32,7 @@
     <string name="text_Settings_Light">Licht voorkeur</string>
     <string name="Button_Settings_SetPreferences">Sla voorkeur op</string>
     <string name="button_Settings_ChangePassword">Verander wachtwoord</string>
+    <string name="button_Settings_About">About</string>
     <string name="alert_NoMatchingPasswords">Het nieuwe wachtwoord komt niet overeen</string>
     <string name="alert_NoMatchingWithOldPassword">Het oude wachtwoord komt niet overeen met de nieuwe</string>
     <string name="toast_ChangePreferenceSucces">Succesvol instellingen verandert</string>

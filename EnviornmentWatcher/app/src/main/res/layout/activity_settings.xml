@@ -86,13 +86,20 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_gravity="center_horizontal"
-        android:paddingTop="50dp">
+        android:paddingTop="30dp">
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_Settings_ChangePassword"
             android:id="@+id/button_Settings_ChangePassword"
+            android:layout_gravity="center_horizontal" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_Settings_About"
+            android:id="@+id/button_Settings_About"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
