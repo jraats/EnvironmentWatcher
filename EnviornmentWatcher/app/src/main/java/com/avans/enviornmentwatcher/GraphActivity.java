@@ -1,6 +1,5 @@
 package com.avans.enviornmentwatcher;
 
-import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.CalendarView;
@@ -13,12 +12,15 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Class that displays the graphs
+ */
 public class GraphActivity extends AppCompatActivity {
-    GraphView graph;
-    CalendarView calenderView;
-    LineGraphSeries<DataPoint> mSeries1;
-    TextView text_Sensor_Item;;
-    String item;
+    GraphView graph;                                    //holds the graph
+    CalendarView calenderView;                          //holds the calender
+    LineGraphSeries<DataPoint> mSeries1;                //holds the datapoints that fill the graph
+    TextView text_Sensor_Item;                          //Displays if your watching Light or Temperature
+    String item;                                        //Holds the choice of watching light of Temperature
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +59,7 @@ public class GraphActivity extends AppCompatActivity {
         graph.getGridLabelRenderer().setNumHorizontalLabels(6);
         //graph.getGridLabelRenderer().setNumVerticalLabels(10);
 
+        //gets points for graph, when user selects a date
         calenderView = (CalendarView) findViewById(R.id.calendarView);
         calenderView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
@@ -77,13 +80,13 @@ public class GraphActivity extends AppCompatActivity {
                 generateData(item, date);
             }
         });
-
-
-
     }
 
-
-    //Gets the Data from the server based on a date
+    /*! \Get data
+     *  @param item must be temperature or light (what user would like to see)
+     *  @param date from wich day the person wants to see it
+     *  Gets the Data from the server based on a date
+     */
     private void generateData(final String item, final String date) {
         JSONCommunicator.getInstance().getSensorDataWithDate(date, date, 2, new CommunicationInterface<ArrayList<HashMap<String, String>>>() {
             @Override
@@ -94,9 +97,9 @@ public class GraphActivity extends AppCompatActivity {
                 ArrayList<Double> data = new ArrayList<Double>();
                 ArrayList<DataPoint> values = new ArrayList<DataPoint>();
 
-                //normalize if there are more then 1000 values
+                //normalize if there are more then 1500 values
                 //Graphview crashes otherwise
-                if(object.size() > 1000)
+                if(object.size() > 1500)
                     meanValue = object.size() / 1000;
 
                 for (int i = 0; i < object.size(); i++) {

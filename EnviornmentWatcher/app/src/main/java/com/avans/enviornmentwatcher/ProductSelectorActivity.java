@@ -17,10 +17,12 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
+/**
+ * Class that shows all products
+ */
 public class ProductSelectorActivity extends AppCompatActivity {
 
-    private EditText editText_Selected_Product;
+    private EditText editText_Selected_Product;                             //
     private Button button_Select_Product, button_Unregister_Product;
     private Spinner spinner_Room, spinner_Location;
     private ArrayList<Product> products;
@@ -89,6 +91,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
             }
         });
 
+        //Creating first spinner and filling them
         spinner_Room = (Spinner) findViewById(R.id.spinner_Room);
         spinner_Room.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -102,6 +105,7 @@ public class ProductSelectorActivity extends AppCompatActivity {
             }
         });
 
+        //Creates second spinner, but not filling it yet
         spinner_Location = (Spinner) findViewById(R.id.spinner_Location);
 
 
@@ -133,6 +137,11 @@ public class ProductSelectorActivity extends AppCompatActivity {
         }
     }
 
+
+    /*! \creates settings button
+    *  @param menu the menu that is used in the app
+    *  creates settingsbutton on the topRight
+    */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -140,6 +149,10 @@ public class ProductSelectorActivity extends AppCompatActivity {
         return true;
     }
 
+    /*! \acts on pressing settings button
+     *  @param item (In this case not needed, since we dont use items)
+     *  Change screen when settings button is selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -147,7 +160,9 @@ public class ProductSelectorActivity extends AppCompatActivity {
         return true;
     }
 
-    //Filling the first spinner with rooms
+    /*! \fill spinner
+     *  Filling the first spinner with rooms
+     */
     private void fillFirstSpinner(){
         List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
@@ -162,7 +177,9 @@ public class ProductSelectorActivity extends AppCompatActivity {
         spinner_Room.setAdapter(adapter);
     }
 
-    //Filling the second spinner with locations from the room selected in first spinner
+    /*! \fill spinner
+    *   Filling the second spinner with locations from the room selected in first spinner
+    */
     private void fillSecondSpinner(String room){
         List<String> spinnerArray =  new ArrayList<>();
         for(int i = 0; i < products.size(); i++)
@@ -178,7 +195,9 @@ public class ProductSelectorActivity extends AppCompatActivity {
         spinner_Location.setAdapter(adapter);
     }
 
-    //When the screen is reselected
+    /*! \when screen resumes
+    *   When the screen is reselected it will check if the product reservation has changed
+    */
     public void onResume() {
         super.onResume();
 
@@ -192,6 +211,11 @@ public class ProductSelectorActivity extends AppCompatActivity {
 
     }
 
+    /*! \Get product id
+     *  @param room the room in wich the sensor lies
+     *  @param location the location within the room the sensor lies
+     *  Sets the roomname and location to an ID, needed to get data from server
+     */
     private int  getProductID(String room, String location){
         for (int i = 0; i < products.size(); i++)
         {
@@ -202,6 +226,10 @@ public class ProductSelectorActivity extends AppCompatActivity {
         return -1;
     }
 
+    /*! \Get product based on id
+     *  @param id the id of the sensor needed
+     *  gets the location of the location and room from the list with products
+     */
     private Product getProductRoomLocation(int id){
         if(products != null) {
             for (int i = 0; i < products.size(); i++) {

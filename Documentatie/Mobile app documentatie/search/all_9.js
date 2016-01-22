@@ -1,0 +1,7 @@
+var searchData=
+[
+  ['oncreateoptionsmenu',['onCreateOptionsMenu',['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_overview_activity.html#a1cb8e9ce5febf49977c64370acf3e91c',1,'com.avans.enviornmentwatcher.ProductOverviewActivity.onCreateOptionsMenu()'],['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_selector_activity.html#a566fe52f163ef506ab76c9a04ac87fa2',1,'com.avans.enviornmentwatcher.ProductSelectorActivity.onCreateOptionsMenu()']]],
+  ['onoptionsitemselected',['onOptionsItemSelected',['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_overview_activity.html#a46d629b96b9b4613841adfe05b3aa79a',1,'com.avans.enviornmentwatcher.ProductOverviewActivity.onOptionsItemSelected()'],['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_selector_activity.html#a15713e826b7ed28bd5b0812357317278',1,'com.avans.enviornmentwatcher.ProductSelectorActivity.onOptionsItemSelected()']]],
+  ['onpause',['onPause',['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_overview_activity.html#a01ceb539d0bccc3cd9ef09b4e99ccf65',1,'com::avans::enviornmentwatcher::ProductOverviewActivity']]],
+  ['onresume',['onResume',['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_overview_activity.html#aba4004fda68717ee2e40c0d9da2247eb',1,'com.avans.enviornmentwatcher.ProductOverviewActivity.onResume()'],['../classcom_1_1avans_1_1enviornmentwatcher_1_1_product_selector_activity.html#a5ff0e0e3bee56f8405996153dc4ce962',1,'com.avans.enviornmentwatcher.ProductSelectorActivity.onResume()']]]
+];

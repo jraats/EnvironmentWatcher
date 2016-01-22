@@ -14,6 +14,10 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
+
+/**
+ * Class that shows settings and preferences
+ */
 public class SettingsActivity extends AppCompatActivity {
     private EditText editText_Settings_Temperature, editText_Settings_Light;
     private Button button_Settings_ChangePreference, button_Settings_ChangePassword, button_Settings_About;
@@ -158,7 +162,10 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    //Displays an error message when user does something wrong
+    /*! \gives an alert
+     *  @param argument what is needed to display as an error
+     *  Creating a alert when the user cannot login (assuming this is actually the problem)
+     */
     private void getAlert(String argument)
     {
 
