@@ -3,14 +3,11 @@ package com.avans.enviornmentwatcher;
 import java.util.HashMap;
 
 /**
- * Created by Raoul-Laptop on 11-12-2015.
+ * Model class of a product
  */
 public class Product {
-    private int id;
-    private String location, room;
-    private HashMap<String, String> temperature;
-    private HashMap<String, String> light;
-
+    private int id;                                     //The ID seperates the product from eachother
+    private String location, room;                      //Names of where the sensor is located
     public Product()
     {
 
@@ -40,19 +37,4 @@ public class Product {
         this.room = room;
     }
 
-    public HashMap<String, String> getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(HashMap<String, String> temperature) {
-        this.temperature = temperature;
-    }
-
-    public HashMap<String, String> getLight() {
-        return light;
-    }
-
-    public void setLight(HashMap<String, String> light) {
-        this.light = light;
-    }
 }

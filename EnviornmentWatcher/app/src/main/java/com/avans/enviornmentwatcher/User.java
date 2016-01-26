@@ -1,7 +1,7 @@
 package com.avans.enviornmentwatcher;
 
 /**
- * Created by Raoul-Laptop on 11-12-2015.
+ * Model class of a user
  */
 public class User {
     private String username, apiKey;

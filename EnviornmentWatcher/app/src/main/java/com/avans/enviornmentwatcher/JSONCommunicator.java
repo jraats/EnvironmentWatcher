@@ -19,25 +19,31 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Class responsible for communicating with the server
+ */
 public class JSONCommunicator {
 
     private static JSONCommunicator JSONCommunicator = null;
     private static Context context;
-    private RequestQueue mRequestQueue;
+    private RequestQueue mRequestQueue;                                 //A que that handles all the request
 
     //TODO: Get this to fucking work
     /*
     private String MyPREFERENCES = "myPrefs";
     private SharedPreferences sharedpreferences;*/
     //private String url = "http://85.144.219.90:1337/api/";
-    private String url = "http://www.senzingyou.nl:7862/api/";
+    private String url = "http://www.senzingyou.nl:7862/api/";          //url needed to contact the server
 
 
     private JSONCommunicator(Context context) {
         this.context = context;
     }
 
-    // returns the class and makes it if it isn't created yet
+    /*! \Returns class
+     *  @param context needed for background of app
+     *  returns the class and makes it if it isn't created yet
+     */
     public static synchronized JSONCommunicator getInstance(Context context) {
         if(null == JSONCommunicator) {
             JSONCommunicator = new JSONCommunicator(context);
@@ -45,7 +51,9 @@ public class JSONCommunicator {
         return JSONCommunicator;
     }
 
-    //this is so you don't need to pass context each time
+    /*! \Returns class
+     *  this is so you don't need to pass context each time
+     */
     public static synchronized JSONCommunicator getInstance()
     {
         if (null == JSONCommunicator)
@@ -56,7 +64,12 @@ public class JSONCommunicator {
         return JSONCommunicator;
     }
 
-    //send login data to server
+    /*! \Login function
+     *  @param username the name of the user
+     *  @param password the password of the user
+     *  @param listener the response that needs to be send to the application
+     *  send login data to server and expects a key back
+     */
     public void login(String username, String password, final CommunicationInterface<String> listener)
     {
         HashMap<String, String> params = new HashMap<>();
@@ -88,8 +101,13 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
-
-    //returns a object from the server
+    /*! \Gets an item
+     *  @param table in wich table it can be found in the database
+     *  @param item the thing in the database you need
+     *  @param optional sometimes you need a extra part of a url to acces it
+     *  @param listener the response that needs to be send to the application
+     *  returns a certain object from the server
+     */
     public void getObject(final String table, final String item, final String optional,  final CommunicationInterface<HashMap<String, String>> listener)
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table+optional+"/"+item,
@@ -136,6 +154,13 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
+    /*! \Gets multible items
+     *  @param table in wich table it can be found in the database
+     *  @param item the thing in the database you need
+     *  @param optional sometimes you need a extra part of a url to acces it
+     *  @param listener the response that needs to be send to the application
+     *  gets multible data from specific table
+     */
     public void getMultibleData(final String table, final String item, final String optional,
                                 final CommunicationInterface<ArrayList<HashMap<String, String>>> listener)
     {
@@ -186,7 +211,11 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
-    //Retrieving all sensors from database
+    /*! \Gets all items
+     *  @param table in wich table it can be found in the database
+     *  @param listener the response that needs to be send to the application
+     *  Retrieving all data from a table in the database
+     */
     public void getAllData(final String table, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener)
     {
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+table, new Response.Listener<JSONObject>() {
@@ -234,7 +263,12 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
-    //Changes data in the database
+    /*! \change data in database
+     *  @param table in wich table it can be found in the database
+     *  @param params the name and item of the thing you want to change
+     *  @param listener the response that needs to be send to the application
+     *  changes the data in the database based on the params
+     */
     public void changeData(final String table, final HashMap<String, String> params, final CommunicationInterface<Integer> listener){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.PUT, url+table+"/"+DataCommunicator.getInstance().getUser().getUsername(),
                 new JSONObject(params), new Response.Listener<JSONObject>() {
@@ -263,7 +297,13 @@ public class JSONCommunicator {
         this.getRequestQueue().add(jsObjRequest);
     }
 
-    //returns all sensor data from a date (only 1 dat for now)
+    /*! \get sensor data
+     *  @param d1 the chosen day
+     *  @param d2 for now the same as d1
+     *  @param id the id of the sensor you want to see
+     *  @param listener the response that needs to be send to the application
+     *  returns all sensor data from a date (only 1 dat for now)
+     */
     public void getSensorDataWithDate(final String d1,final String d2,final int id, final CommunicationInterface<ArrayList<HashMap<String, String>>> listener){
         JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url+"sensordata/getDataBytime/"+id+"/"+d1+"/"+d2, new Response.Listener<JSONObject>() {
             @Override

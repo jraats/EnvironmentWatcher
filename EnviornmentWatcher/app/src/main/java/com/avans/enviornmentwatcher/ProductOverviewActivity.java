@@ -26,13 +26,16 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+/**
+ * Class that shows a selected product
+ */
 public class ProductOverviewActivity extends AppCompatActivity {
 
-    private EditText editText_Current_Temperature, editText_Current_Light;
-    private TextView text_Current_Light, text_Current_Temperature;
-    private Button button_Register_Product, button_See_User_Count;
-    private Product product = new Product();
-    private Timer timer;
+    private EditText editText_Current_Temperature, editText_Current_Light;  //texts that displays current Temperature and Light
+    private TextView text_Current_Light, text_Current_Temperature;          //Placeholders what the numbers mean
+    private Button button_Register_Product, button_See_User_Count;          //Buttons
+    private Product product = new Product();                                //Product to hold ID
+    private Timer timer;                                                    // Timer to update everytime
     private TimerTask timerTask;
 
     @Override
@@ -101,6 +104,7 @@ public class ProductOverviewActivity extends AppCompatActivity {
             }
         });
 
+
         button_See_User_Count = (Button) findViewById(R.id.button_See_User_Count);
         button_See_User_Count.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,7 +115,7 @@ public class ProductOverviewActivity extends AppCompatActivity {
                                 @Override
                                 public void getResponse(ArrayList<HashMap<String, String>> object) {
                                     if (!object.equals(null)) {
-
+                                        //Displays user through a alert Dialog
                                         AlertDialog.Builder builder = new AlertDialog.Builder(ProductOverviewActivity.this);
                                         builder.setTitle("Gebruikers");
                                         ListView layout = new ListView(ProductOverviewActivity.this);
@@ -143,6 +147,10 @@ public class ProductOverviewActivity extends AppCompatActivity {
         });
     }
 
+    /*! \creates settings button
+     *  @param menu the menu that is used in the app
+     *  creates settingsbutton on the topRight
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -150,6 +158,10 @@ public class ProductOverviewActivity extends AppCompatActivity {
         return true;
     }
 
+    /*! \acts on pressing settings button
+     *  @param item (In this case not needed, since we dont use items)
+     *  Change screen when settings button is selected
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -157,13 +169,17 @@ public class ProductOverviewActivity extends AppCompatActivity {
         return true;
     }
 
-    //Pauses the timer
+    /*! \Pauses the timer
+     *  Pauses the timer, for example when the screen is not being used
+     */
     public void onPause(){
         super.onPause();
         timer.cancel();
     }
 
-    //Timer sending a update request every 30 seconds
+    /*! \resumes or start the timer
+     *  Timer sending a update request every 30 seconds
+     */
     public void onResume(){
         super.onResume();
         try {
@@ -180,7 +196,9 @@ public class ProductOverviewActivity extends AppCompatActivity {
         }
     }
 
-    //retrieves latest data from the server
+    /*! \Updates the data
+     *  retrieves latest data from the server
+     */
     private void updateData(){
         if(product.getId() != -1) {
             JSONCommunicator.getInstance().getObject("sensorData", String.valueOf(product.getId()), "/getLatest",

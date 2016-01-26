@@ -18,6 +18,7 @@ router.get('/api/product/:id', product.getProductById);
 
 router.get('/api/preferences', preferences.getPreferences);
 router.get('/api/preferences/:userUsername', preferences.getPreferencesByUsername);
+router.get('/api/preferences/getByProductID/:productId', preferences.getPreferencesByProductID);
 
 router.get('/api/sensorData', sensorData.getSensorData);
 router.get('/api/sensorData/:productId', sensorData.getDataByProductId);

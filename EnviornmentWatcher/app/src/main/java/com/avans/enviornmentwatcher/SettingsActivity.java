@@ -2,6 +2,7 @@ package com.avans.enviornmentwatcher;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.InputType;
@@ -13,9 +14,13 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
+
+/**
+ * Class that shows settings and preferences
+ */
 public class SettingsActivity extends AppCompatActivity {
     private EditText editText_Settings_Temperature, editText_Settings_Light;
-    private Button button_Settings_ChangePreference, button_Settings_ChangePassword;
+    private Button button_Settings_ChangePreference, button_Settings_ChangePassword, button_Settings_About;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,7 @@ public class SettingsActivity extends AppCompatActivity {
         editText_Settings_Temperature = (EditText) findViewById(R.id.EditText_Settings_Temperature);
         button_Settings_ChangePreference = (Button) findViewById(R.id.button_Settings_ChangePreference);
         button_Settings_ChangePassword = (Button) findViewById(R.id.button_Settings_ChangePassword);
-
+        button_Settings_About = (Button) findViewById(R.id.button_Settings_About);
 
         JSONCommunicator.getInstance().getObject("preferences", DataCommunicator.getInstance().getUser().getUsername(), "", new CommunicationInterface<HashMap<String, String>>() {
             @Override
@@ -71,6 +76,14 @@ public class SettingsActivity extends AppCompatActivity {
             }
         });
 
+        button_Settings_About.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), AboutActivity.class));
+            }
+        });
+
         button_Settings_ChangePassword.setOnClickListener(new View.OnClickListener(){
 
             String m_Text = "";
@@ -82,6 +95,7 @@ public class SettingsActivity extends AppCompatActivity {
                 LinearLayout layout = new LinearLayout(SettingsActivity.this);
                 layout.setOrientation(LinearLayout.VERTICAL);
 
+                //created field for user input
                 final EditText passwordOld = new EditText(SettingsActivity.this);
                 passwordOld.setHint("old password");
                 passwordOld.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
@@ -100,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
                 builder.setView(layout);
 
 
-                // Set up the buttons
+                // Set up the buttons within the dialog
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -148,6 +162,10 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    /*! \gives an alert
+     *  @param argument what is needed to display as an error
+     *  Creating a alert when the user cannot login (assuming this is actually the problem)
+     */
     private void getAlert(String argument)
     {
 

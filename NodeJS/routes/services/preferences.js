@@ -12,6 +12,14 @@ var preferences = {
 			res.json({error: "space has been detected"});
 		}
 	},
+	getPreferencesByProductID: function(req, res){
+		if (!objectreciever.CheckForInjection(req.params.username)) {
+			var query = "SELECT preferences.* FROM preferences LEFT JOIN user ON preferences.userUsername = user.username WHERE user.productId = "+req.params.productId+";";
+			objectreciever.getObject(req, res, query, "preferences");
+		}else{
+			res.json({error: "space has been detected"});
+		}
+	},
 	createPreferences: function(req, res){
 		var object = { 
 			userUsername: req.body.userUsername || '',

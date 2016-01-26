@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import java.io.Console;
 import java.util.HashMap;
 
+/**
+ * Class that allows user to login
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private EditText editText_Username, editText_Password;
@@ -68,7 +70,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    //Creating a alert when the user cannot login (assuming this is actually the problem
+    /*! \gives an alert
+     *  @param argument what is needed to display as an error
+     *  Creating a alert when the user cannot login (assuming this is actually the problem)
+     */
     //TODO: create different errors
     private void getAlert(String argument)
     {
