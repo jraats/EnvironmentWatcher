@@ -3,14 +3,17 @@ import ast
 import time
 import datetime
 
+#convert the settings file to a dictionary
 settings = []
 with open('settings','r') as inf:
     for line in inf:
         settings.append(ast.literal_eval(line)) 
 
+#get the sleep duration
 sleepDuration = settings[0]['retrieveSensorDataDuration']		
 watcher = None
 try:
+	#initialize the watcher
 	watcher = EnvironmentWatcher.EnvironmentWatcher(settings[0])
 	
 	print('Current product:')

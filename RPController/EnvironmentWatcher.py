@@ -6,8 +6,12 @@ from time import gmtime, strftime
 import datetime
 from threading import Thread
 
+## The class EnvironmentWatcher. This is the core class
 class EnvironmentWatcher:
 
+	## The constructor
+	#  @param self The object pointer.
+	#  @param settings All the settings for this product
 	def __init__(self, settings):
 		self.debug = settings['debug']			
 		self.productId = settings['productId']
@@ -34,6 +38,9 @@ class EnvironmentWatcher:
 		print('started at')
 		print(self.lastSendSensorData)
 	
+	## Initialize all the sensors based on the settings. Don't call this method. Its called internally.
+	#  @param self The object pointer.
+	#  @param settings The settings that contain the sensors
 	def initializeSensors(self, settings):
 		for dataSensor in settings['sensors']:
 			data = settings['sensors'][dataSensor]
@@ -42,13 +49,18 @@ class EnvironmentWatcher:
 					data['datalength'], data['apiName'], data['apiTresholdName'],
 					data['cmdCode'], data['percentageFactor']))
 
+	## Load a product. This will be used for the rest of the application
+	#  @param self The object pointer.
+	#  @param id The id of the product
 	def loadProduct(self, id):
 		product = self.api.getById('product', id)
 		if(len(product['product']) == 0):
 			raise ValueError("Product not found")
 		else:
 			self.product = product['product'][0]
-		
+
+	## Update the preference data. It removes the old ones and request the new ones
+	#  @param self The object pointer.
 	def updatePreferenceData(self):
 		preferences = self.api.getPreferencesByProduct(self.productId)
 		preferences = preferences['preferences']
@@ -60,6 +72,8 @@ class EnvironmentWatcher:
 			for sensor in self.sensors:
 				sensor.addPreference(preference)
 	
+	## Call this method every few seconds to process the program
+	#  @param self The object pointer.
 	def process(self):
 		self.updatePreferenceData()
 		
@@ -88,7 +102,10 @@ class EnvironmentWatcher:
 			else:
 				thread = Thread(target = self.runHadoopAverageCommands, args=(apiData, ))
 				thread.start()
-				
+	
+	## Calculate the averages for all the sensors using Hadoop
+	#  @param self The object pointer.	
+	#  @param apiData The data to store the averages
 	def runHadoopAverageCommands(self, apiData):
 		print("started the hadoop thread!")
 		threads = []
@@ -105,12 +122,18 @@ class EnvironmentWatcher:
 		self.api.newData('sensorData', apiData)
 		print("Complete hadoop thread finished")
 		
+	## Calculate the average for the given sensor
+	#  @param self The object pointer.	
+	#  @param apiData The data to store the average
+	#  @param sensor The sensor
 	def processAverage(self, apiData, sensor):
 		print("started thread get data for sensor " + sensor.apiName)
 		output = self.hadoop.createUploadWaitDownloadCatRemove(sensor.sensorData, sensor.apiName)
 		apiData[sensor.apiName] = output
 		print("thread for " + sensor.apiName + " finished!")
 	
+	## Shut the program down. Reloase all the resources
+	#  @param self The object pointer.	
 	def exit(self):
 		for sensor in self.sensors:
 			self.i2c.writeRegisterByte(self.arduino_slave_addr,sensor.cmdCode, sensor.getSpeedAngle(0))
